@@ -23,7 +23,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                    一覧
+                                </NavLink>
+                                <NavLink href={route('entities.index')} active={route().current('entities.index')}>
+                                    編集
                                 </NavLink>
                             </div>
                         </div>
@@ -94,7 +97,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                            一覧
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('entities.index')} active={route().current('entities.index')}>
+                            編集
                         </ResponsiveNavLink>
                     </div>
 
@@ -123,6 +129,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             )}
 
             <main>{children}</main>
+
+            <footer className="bg-white dark:bg-gray-800 text-right text-gray-800 dark:text-gray-400 p-2">
+                Recording Anniversary
+            </footer>
         </div>
     );
 }
