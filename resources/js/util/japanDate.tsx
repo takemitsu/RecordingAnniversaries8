@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
+import ja from "dayjs/locale/ja";
+dayjs.locale(ja);
 
-export default function japanDate(value: string, is_only_wa: boolean = false): string {
+function japanDate(value: string, is_only_wa: boolean = false): string {
     if (!value) {
         return ''
     }
@@ -45,3 +47,28 @@ export default function japanDate(value: string, is_only_wa: boolean = false): s
 
     return gengo.gengo + year + '年' + (dt.month() + 1) + '月' + dt.date() + '日'
 }
+
+
+function getAges(value: string | null): string {
+    if ((!value) || value.length != 10) {
+        return ''
+    }
+    let dt = dayjs(value, 'YYYY-MM-DD')
+    if (!dt.isValid()) {
+        return ''
+    }
+    // 未来日なら表示しない
+    if (dayjs().diff(value, 'days') < 0) {
+        return ''
+    }
+
+    let diff_year = dayjs().diff(value, 'years')
+    return diff_year + '年（' + (diff_year + 1) + '年目）'
+}
+
+function getTodayForHeader(): string {
+    return dayjs().format( "YYYY-MM-DD (dd) hh:mm")
+        + "（" + japanDate(dayjs().format("YYYY-MM-DD"),true) + "）";
+}
+
+export {japanDate, getAges, getTodayForHeader}

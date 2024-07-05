@@ -1,10 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head, Link, usePage} from '@inertiajs/react';
-import { PageProps } from '@/types';
+import {japanDate,getAges} from "@/util/japanDate";
+import {PageProps} from '@/types';
 import {Entity} from "@/Pages/Entities";
-import TextButton from "@/Components/TextButton";
-import japanDate from "@/util/japanDate";
-import getAges from "@/util/getAges";
 
 export default function Dashboard({entities}: { entities: Entity[] }) {
     const user = usePage<PageProps>().props.auth.user;
@@ -52,7 +50,7 @@ export default function Dashboard({entities}: { entities: Entity[] }) {
                     <div className="m-4 p-2 bg-gray-800 text-gray-200 rounded text-center">
                         データがありません。<br/>
                         <Link
-                            href={route('entities.index' )}
+                            href={route('entities.index')}
                             method="get"
                             className="text-sky-400 dark:text-sky-400 pr-2"
                         >

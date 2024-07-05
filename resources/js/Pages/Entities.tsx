@@ -1,8 +1,7 @@
 import {PageProps} from "@/types";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import {Head, Link, usePage} from "@inertiajs/react";
-import getAges from "@/util/getAges";
-import japanDate from "@/util/japanDate";
+import {getAges, japanDate} from "@/util/japanDate";
 import TextButton from "@/Components/TextButton";
 import {Inertia} from "@inertiajs/inertia";
 
