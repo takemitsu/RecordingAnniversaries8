@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard',  [EntitiesController::class, 'pickup'])->name('dashboard');
 
-    Route::get('/entities', [EntitiesController::class, 'index'])->name('entities.index');
+    // apiResource では足りないモノを追加。apiResourceの前に定義しないといけない（"create"を{entity}で吸収されるため)
     Route::get('/entities/create', [EntitiesController::class, 'create'])->name('entities.create');
     Route::get('/entities/{entity}/edit', [EntitiesController::class, 'edit'])->name('entities.edit');
     Route::get('/entities/{entity}/days/create', [DaysController::class, 'create'])->name('entities.days.create');

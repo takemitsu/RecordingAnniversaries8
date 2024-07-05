@@ -18,16 +18,16 @@ class DaysController extends Controller
         return $entity->days;
     }
 
-    public function create(Entity $entity)
+    public function create(Entity $entity): \Inertia\Response
     {
-        return Inertia::render('Anniv', [
+        return Inertia::render('EditAnniversaryDay', [
             'entityData' => $entity,
             'dayData' => null,
             'status' => session('status'),
         ]);
     }
 
-    public function store(Request $request, Entity $entity)
+    public function store(Request $request, Entity $entity): \Illuminate\Http\RedirectResponse
     {
         if ($entity->user->id != auth()->user()->id) {
             abort(404, 'Not Found Entity');
@@ -50,7 +50,7 @@ class DaysController extends Controller
         return redirect()->route('entities.index');
     }
 
-    public function show(Entity $entity, Day $day)
+    public function show(Entity $entity, Day $day): Day
     {
         if ($entity->user->id != auth()->user()->id) {
             abort(404, 'Not Found Entity');
@@ -59,16 +59,16 @@ class DaysController extends Controller
         return $day;
     }
 
-    public function edit(Request $request, Entity $entity, Day $day)
+    public function edit(Request $request, Entity $entity, Day $day): \Inertia\Response
     {
-        return Inertia::render('Anniv', [
+        return Inertia::render('EditAnniversaryDay', [
             'entityData' => $entity,
             'dayData' => $day,
             'status' => session('status'),
         ]);
     }
 
-    public function update(Request $request, Entity $entity, Day $day)
+    public function update(Request $request, Entity $entity, Day $day): \Illuminate\Http\RedirectResponse
     {
         if ($entity->user->id != auth()->user()->id) {
             abort(404, 'Not Found Entity');
@@ -89,7 +89,7 @@ class DaysController extends Controller
         return redirect()->route('entities.index');
     }
 
-    public function destroy(Entity $entity, Day $day)
+    public function destroy(Entity $entity, Day $day): \Illuminate\Http\RedirectResponse
     {
         if ($entity->user->id != auth()->user()->id) {
             abort(404, 'Not Found Entity');

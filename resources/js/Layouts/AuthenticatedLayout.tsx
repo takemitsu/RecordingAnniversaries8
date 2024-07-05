@@ -22,7 +22,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                     <ApplicationLogo
                                         className="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"/>
                                 </Link>
-                                <text className="block ml-2 text-gray-600 dark:text-gray-400">{today}</text>
+                                <div className="block ml-2 text-gray-600 dark:text-gray-400">{today}</div>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">

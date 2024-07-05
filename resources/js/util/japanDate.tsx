@@ -67,7 +67,7 @@ function getAges(value: string | null): string {
 }
 
 function getTodayForHeader(): string {
-    return dayjs().format( "YYYY-MM-DD (dd) hh:mm")
+    return dayjs().locale(ja).format( "YYYY-MM-DD (dd) HH:mm")
         + "（" + japanDate(dayjs().format("YYYY-MM-DD"),true) + "）";
 }
 

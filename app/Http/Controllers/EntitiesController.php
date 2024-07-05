@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class EntitiesController extends Controller
 {
-    public function pickup()
+    public function pickup(): \Inertia\Response
     {
         $entities = Entity::where('user_id', auth()->user()->id)
             ->has('days')
@@ -35,7 +35,7 @@ class EntitiesController extends Controller
         ]);
     }
 
-    public function index()
+    public function index(): \Inertia\Response
     {
         $entities = Entity::where('user_id', auth()->user()->id)
             ->with('days')
@@ -47,16 +47,16 @@ class EntitiesController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(): \Inertia\Response
     {
-        return Inertia::render('Entity', [
+        return Inertia::render('EditEntity', [
             'entityData' => null,
             'status' => session('status'),
         ]);
     }
 
 
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         // フォームリクエスト 作ってもいいけどコレで
         $validatedData = $request->validate([
@@ -74,38 +74,40 @@ class EntitiesController extends Controller
     }
 
 
-    public function show(Entity $entity)
+    public function show(Entity $entity): Entity
     {
         return $entity->load('days');
     }
 
 
-    public function edit(Entity $entity)
+    public function edit(Entity $entity): \Inertia\Response
     {
-        return Inertia::render('Entity', [
+        return Inertia::render('EditEntity', [
             'entityData' => $entity,
             'status' => session('status'),
         ]);
     }
 
 
-    public function update(Request $request, Entity $entity)
+    public function update(Request $request, Entity $entity): \Illuminate\Http\RedirectResponse
     {
         // フォームリクエスト 作ってもいいけどコレで
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'desc' => 'nullable|string'
+            'desc' => 'nullable|string',
+            'status' => 'boolean',
         ]);
 
         $entity->name = $validatedData['name'];
         $entity->desc = $validatedData['desc'] ?? null;
+        $entity->status = $validatedData['status'] ?? true;
         $entity->save();
 
         return redirect()->route('entities.index');
     }
 
 
-    public function destroy(Entity $entity)
+    public function destroy(Entity $entity): \Illuminate\Http\RedirectResponse
     {
         $entity->delete();
 
