@@ -12,7 +12,7 @@ class Day extends Model
     use HasFactory;
     use SoftDeletes;
 
-    public function Entity()
+    public function entity()
     {
         return $this->belongsTo('App\Models\Entity');
     }
