@@ -82,7 +82,7 @@ export default function Entities({entities}: { entities: Entity[] }) {
                         </div>
 
                         {entity.days.map((day) => (
-                            <div key={'D' + day.id} className="p-2 border-t border-gray-200 dark:border-gray-600">
+                            <div key={'D' + day.id} className="p-2 pt-3 mt-2 border-t border-gray-200 dark:border-gray-600">
                                 <div className="text-gray-200 text-base">
                                     <span className="text-blue-400 font-bold">{day.name}</span>
                                     <span className="text-sm mx-2">まで</span>
