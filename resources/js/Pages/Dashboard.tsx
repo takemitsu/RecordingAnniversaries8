@@ -40,7 +40,7 @@ export default function Dashboard({entities}: { entities: Entity[] }) {
                                     <span>{getAges(day.anniv_at)}</span>
                                 </div>
                                 <div className="text-gray-400 dark:text-gray-400 whitespace-pre-line">
-                                    {entity.desc}
+                                    {day.desc}
                                 </div>
                             </div>
                         ))}
