@@ -26,4 +26,17 @@ class PasswordController extends Controller
 
         return back();
     }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back();
+    }
 }
