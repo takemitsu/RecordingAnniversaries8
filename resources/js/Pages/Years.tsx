@@ -24,8 +24,8 @@ export default function Years() {
 
     return (
         <div
-            className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div className="w-full sm:max-w-md mt-1 sm:rounded-lg">
+            className="min-h-screen flex flex-col sm:justify-center items-center pt-0 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+            <div className="w-full sm:max-w-md mt-3 ml-5 sm:rounded-lg">
                 <SecondaryButton type="button" onClick={() => {
                     location.href = "/"
                 }}>
@@ -64,8 +64,8 @@ export default function Years() {
                                 <tr key={'ty' + year}>
                                     <td className="border border-slate-600 px-2 py-1 text-gray-400 dark:text-gray-400 text-right">{i}</td>
                                     <td className="border border-slate-600 px-2 py-1 text-gray-400 dark:text-gray-400">{japanDate(endOfYear(year), true)}度</td>
-                                    <td className="border border-slate-600 px-2 py-1 text-gray-400 dark:text-gray-400">{startDayOfNendo(year, "YYYY年MM月")}</td>
-                                    <td className="border border-slate-600 px-2 py-1 text-gray-400 dark:text-gray-400">{endDayOfNendo(year, "YYYY年MM月")}</td>
+                                    <td className="border border-slate-600 px-2 py-1 text-gray-400 dark:text-gray-400">{startDayOfNendo(year, "YYYY年M月")}</td>
+                                    <td className="border border-slate-600 px-2 py-1 text-gray-400 dark:text-gray-400">{endDayOfNendo(year, "YYYY年M月")}</td>
                                 </tr>
                             ))}
                             </tbody>
