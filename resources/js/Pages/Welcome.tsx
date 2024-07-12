@@ -56,6 +56,16 @@ export default function Welcome({auth, laravelVersion, phpVersion}: PageProps<{
                                     )}
                                 </nav>
                             </div>
+                            <div className="flex items-center gap-2 mt-3">
+                                <nav className="flex flex-1 justify-center">
+                                    <Link
+                                        href={route('years')}
+                                        className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                                    >
+                                        年度一覧
+                                    </Link>
+                                </nav>
+                            </div>
                         </main>
 
                         <footer className="pt-8 text-center text-sm text-black dark:text-white/70">
