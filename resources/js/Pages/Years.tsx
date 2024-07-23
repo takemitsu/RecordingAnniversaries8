@@ -27,7 +27,7 @@ export default function Years() {
             className="min-h-screen flex flex-col sm:justify-center items-center pt-0 sm:pt-0 bg-gray-100 dark:bg-gray-900">
             <div className="w-full sm:max-w-md mt-3 ml-5 sm:rounded-lg">
                 <SecondaryButton type="button" onClick={() => {
-                    location.href = "/"
+                    history.back()
                 }}>
                     戻る
                 </SecondaryButton>
