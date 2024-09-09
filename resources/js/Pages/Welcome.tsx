@@ -24,8 +24,7 @@ export default function Welcome({auth, laravelVersion, phpVersion}: PageProps<{
                                         Anniversary</h2>
 
                                     <p className="mt-2 text-sm/relaxed">
-                                        "Recording Anniversary" is a system designed to register and keep track of
-                                        personal anniversaries.
+                                        Would be cool to add a description of ‘Recording Anniversary’ here someday, but might not end up doing it.
                                     </p>
                                 </div>
                             </div>

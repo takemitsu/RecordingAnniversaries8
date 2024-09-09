@@ -17,7 +17,8 @@ class TestController extends Controller
             'request' => $request->all(),
             'id' => $id ?? "nothing",
         ];
-        Log::info(print_r($log , true));
+        // Log::info(print_r($log , true));
+        Log::info(json_encode($log , JSON_PRETTY_PRINT));
         return $log;
     }
 
