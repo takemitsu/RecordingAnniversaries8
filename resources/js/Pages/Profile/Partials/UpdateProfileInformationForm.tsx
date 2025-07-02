@@ -2,13 +2,13 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Link, useForm, usePage } from '@inertiajs/react';
-import { Transition } from '@headlessui/react';
+import FormSuccessMessage from '@/Components/FormSuccessMessage';
+import { Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
-import { PageProps } from '@/types';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }: { mustVerifyEmail: boolean, status?: string, className?: string }) {
-    const user = usePage<PageProps>().props.auth.user;
+    const user = useAuthUser();
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
@@ -89,15 +89,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                 <div className="flex items-center gap-4">
                     <PrimaryButton disabled={processing}>Save</PrimaryButton>
 
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
-                    </Transition>
+                    <FormSuccessMessage show={recentlySuccessful} message="Saved." />
                 </div>
             </form>
         </section>
