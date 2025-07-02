@@ -4,18 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Day;
 use App\Models\Entity;
+use App\Services\DayService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class DaysController extends Controller
 {
+    private DayService $dayService;
+
+    public function __construct(DayService $dayService)
+    {
+        $this->dayService = $dayService;
+    }
     public function index(Entity $entity)
     {
-        if ($entity->user->id != auth()->user()->id) {
-            abort(404, 'Not Found Entity');
-        }
-
-        return $entity->days;
+        return $this->dayService->getByEntity($entity);
     }
 
     public function create(Entity $entity): \Inertia\Response
@@ -29,10 +32,6 @@ class DaysController extends Controller
 
     public function store(Request $request, Entity $entity): \Illuminate\Http\RedirectResponse
     {
-        if ($entity->user->id != auth()->user()->id) {
-            abort(404, 'Not Found Entity');
-        }
-
         // フォームリクエスト 作ってもいいけどコレで
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -40,23 +39,14 @@ class DaysController extends Controller
             'anniv_at' => 'required|date_format:Y-m-d',
         ]);
 
-        $day = new Day();
-        $day->entity_id = $entity->id;
-        $day->name = $validatedData['name'];
-        $day->desc = $validatedData['desc'] ?? null;
-        $day->anniv_at = $validatedData['anniv_at'];
-        $day->save();
+        $this->dayService->create($entity, $validatedData);
 
         return redirect()->route('entities.index');
     }
 
     public function show(Entity $entity, Day $day): Day
     {
-        if ($entity->user->id != auth()->user()->id) {
-            abort(404, 'Not Found Entity');
-        }
-
-        return $day;
+        return $this->dayService->get($entity, $day);
     }
 
     public function edit(Request $request, Entity $entity, Day $day): \Inertia\Response
@@ -70,10 +60,6 @@ class DaysController extends Controller
 
     public function update(Request $request, Entity $entity, Day $day): \Illuminate\Http\RedirectResponse
     {
-        if ($entity->user->id != auth()->user()->id) {
-            abort(404, 'Not Found Entity');
-        }
-
         // フォームリクエスト 作ってもいいけどコレで
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -81,21 +67,14 @@ class DaysController extends Controller
             'anniv_at' => 'required|date_format:Y-m-d',
         ]);
 
-        $day->name = $validatedData['name'];
-        $day->desc = $validatedData['desc'] ?? null;
-        $day->anniv_at = $validatedData['anniv_at'];
-        $day->save();
+        $this->dayService->update($entity, $day, $validatedData);
 
         return redirect()->route('entities.index');
     }
 
     public function destroy(Entity $entity, Day $day): \Illuminate\Http\RedirectResponse
     {
-        if ($entity->user->id != auth()->user()->id) {
-            abort(404, 'Not Found Entity');
-        }
-
-        $day->delete();
+        $this->dayService->delete($entity, $day);
 
         return redirect()->route('entities.index');
     }

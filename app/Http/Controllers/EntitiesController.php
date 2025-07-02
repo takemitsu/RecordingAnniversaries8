@@ -3,32 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entity;
+use App\Services\EntityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Inertia\Inertia;
 
 class EntitiesController extends Controller
 {
+    private EntityService $entityService;
+
+    public function __construct(EntityService $entityService)
+    {
+        $this->entityService = $entityService;
+    }
     public function pickup(): \Inertia\Response
     {
-        $entities = Entity::where('user_id', auth()->user()->id)
-            ->has('days')
-            ->with('days')
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        foreach ($entities as $key => $entity) {
-            if (count($entity->days) == 0) {
-                unset ($entities[$key]);
-            } else {
-                // diff_days で sort
-                $sorted = array_values(Arr::sort($entity->days, function ($value) {
-                    return $value['diff_days'];
-                }));
-                unset($entities[$key]->days);
-                $entities[$key]->days = $sorted;
-            }
-        }
+        $entities = $this->entityService->getEntitiesForPickup();
 
         return Inertia::render('Dashboard', [
             'entities' => $entities,
@@ -37,10 +27,7 @@ class EntitiesController extends Controller
 
     public function index(): \Inertia\Response
     {
-        $entities = Entity::where('user_id', auth()->user()->id)
-            ->with('days')
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $entities = $this->entityService->getAllForUser();
 
         return Inertia::render('Entities', [
             'entities' => $entities,
@@ -64,11 +51,7 @@ class EntitiesController extends Controller
             'desc' => 'nullable|string'
         ]);
 
-        $entity = new Entity();
-        $entity->user_id = auth()->user()->id;
-        $entity->name = $validatedData['name'];
-        $entity->desc = $validatedData['desc'] ?? null;
-        $entity->save();
+        $this->entityService->create($validatedData);
 
         return redirect()->route('entities.index');
     }
@@ -76,7 +59,7 @@ class EntitiesController extends Controller
 
     public function show(Entity $entity): Entity
     {
-        return $entity->load('days');
+        return $this->entityService->getWithDays($entity);
     }
 
 
@@ -98,10 +81,7 @@ class EntitiesController extends Controller
             'status' => 'boolean',
         ]);
 
-        $entity->name = $validatedData['name'];
-        $entity->desc = $validatedData['desc'] ?? null;
-        $entity->status = $validatedData['status'] ?? true;
-        $entity->save();
+        $this->entityService->update($entity, $validatedData);
 
         return redirect()->route('entities.index');
     }
@@ -109,7 +89,7 @@ class EntitiesController extends Controller
 
     public function destroy(Entity $entity): \Illuminate\Http\RedirectResponse
     {
-        $entity->delete();
+        $this->entityService->delete($entity);
 
         return redirect()->route('entities.index');
     }
