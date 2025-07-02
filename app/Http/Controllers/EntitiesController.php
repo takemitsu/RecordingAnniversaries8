@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entity;
+use App\Http\Requests\StoreEntityRequest;
+use App\Http\Requests\UpdateEntityRequest;
+use App\Http\Resources\EntityResource;
 use App\Services\EntityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -21,7 +24,7 @@ class EntitiesController extends Controller
         $entities = $this->entityService->getEntitiesForPickup();
 
         return Inertia::render('Dashboard', [
-            'entities' => $entities,
+            'entities' => EntityResource::collection($entities),
         ]);
     }
 
@@ -30,7 +33,7 @@ class EntitiesController extends Controller
         $entities = $this->entityService->getAllForUser();
 
         return Inertia::render('Entities', [
-            'entities' => $entities,
+            'entities' => EntityResource::collection($entities),
         ]);
     }
 
@@ -43,28 +46,25 @@ class EntitiesController extends Controller
     }
 
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(StoreEntityRequest $request): \Illuminate\Http\RedirectResponse
     {
-        // フォームリクエスト 作ってもいいけどコレで
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'desc' => 'nullable|string'
-        ]);
-
-        $this->entityService->create($validatedData);
+        $this->entityService->create($request->validated());
 
         return redirect()->route('entities.index');
     }
 
 
-    public function show(Entity $entity): Entity
+    public function show(Entity $entity)
     {
-        return $this->entityService->getWithDays($entity);
+        $this->authorize('view', $entity);
+        $entity = $this->entityService->getWithDays($entity);
+        return new EntityResource($entity);
     }
 
 
     public function edit(Entity $entity): \Inertia\Response
     {
+        $this->authorize('update', $entity);
         return Inertia::render('EditEntity', [
             'entityData' => $entity,
             'status' => session('status'),
@@ -72,16 +72,10 @@ class EntitiesController extends Controller
     }
 
 
-    public function update(Request $request, Entity $entity): \Illuminate\Http\RedirectResponse
+    public function update(UpdateEntityRequest $request, Entity $entity): \Illuminate\Http\RedirectResponse
     {
-        // フォームリクエスト 作ってもいいけどコレで
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'desc' => 'nullable|string',
-            'status' => 'boolean',
-        ]);
-
-        $this->entityService->update($entity, $validatedData);
+        $this->authorize('update', $entity);
+        $this->entityService->update($entity, $request->validated());
 
         return redirect()->route('entities.index');
     }
@@ -89,6 +83,7 @@ class EntitiesController extends Controller
 
     public function destroy(Entity $entity): \Illuminate\Http\RedirectResponse
     {
+        $this->authorize('delete', $entity);
         $this->entityService->delete($entity);
 
         return redirect()->route('entities.index');
