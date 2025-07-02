@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\GoogleAuthService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
@@ -10,6 +11,12 @@ use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteController extends Controller
 {
+    private GoogleAuthService $googleAuthService;
+
+    public function __construct(GoogleAuthService $googleAuthService)
+    {
+        $this->googleAuthService = $googleAuthService;
+    }
 
 
     public function redirectGoogle(): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
@@ -21,45 +28,48 @@ class SocialiteController extends Controller
     public function callbackGoogle()
     {
         $authUser = auth()->user();
-        $user = Socialite::driver('google')->user();
-        $google_id = $user->getId();
+        $googleUser = Socialite::driver('google')->user();
+        $googleId = $googleUser->getId();
 
         if ($authUser) {
-            // ログイン済み時。
-            // 他のユーザで入っている場合はエラーとする
-            $check = User::where('google_id', $google_id)->whereNot('id', $authUser->id)->first();
-            if ($check) {
-                return redirect()->route('login')->with('status', 'used_other_user');
-            }
-            // google_id を設定して保存
-            $authUser->google_id = $google_id;
-            $authUser->save();
+            return $this->handleLoggedInUser($authUser, $googleId);
+        }
+        
+        return $this->handleGuestUser($googleUser, $googleId);
+    }
 
-            // ログイン済みの場合は、紐づけを行ったプロフィール画面に戻す
-            return redirect()->route('profile.edit');
+    /**
+     * ログイン済みユーザーの Google アカウント結合処理
+     */
+    private function handleLoggedInUser(User $authUser, string $googleId)
+    {
+        $result = $this->googleAuthService->linkGoogleAccount($authUser, $googleId);
+        
+        if (!$result['success']) {
+            return redirect()->route('login')->with('status', $result['message']);
+        }
 
-        } else {
-            // 未ログインから来た場合は、google_id があればそれでログインする
-            $authUser = User::where('google_id', $google_id)->first();
-            if ($authUser) {
-                Auth::login($authUser);
-                return redirect()->route('dashboard');
-            }
+        return redirect()->route('profile.edit');
+    }
 
-            // メールアドレスが既に登録されている場合は、メールアドレスが登録されているとエラーにする
-            $authUser = User::where('email', $user->email)->first();
-            if ($authUser) {
-                return redirect()->route('login')->with('status', 'email_already_exist');
-            }
-
-            // google_id, email ともに大丈夫ならば、ユーザを新規作成する
-            $authUser = new User();
-            $authUser->name = $user->getName();
-            $authUser->email = $user->getEmail();
-            $authUser->google_id = $google_id;
-            $authUser->save();
-            Auth::login($authUser);
+    /**
+     * 未ログインユーザーの Google アカウント処理
+     */
+    private function handleGuestUser($googleUser, string $googleId)
+    {
+        // 既存ユーザーでのログインを試行
+        $existingUser = $this->googleAuthService->attemptGoogleLogin($googleId);
+        if ($existingUser) {
             return redirect()->route('dashboard');
         }
+
+        // 新規ユーザー作成を試行
+        $result = $this->googleAuthService->createUserFromGoogle($googleUser);
+        
+        if (!$result['success']) {
+            return redirect()->route('login')->with('status', $result['message']);
+        }
+
+        return redirect()->route('dashboard');
     }
 }

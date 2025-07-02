@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Entity;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class EntityService
@@ -21,21 +20,27 @@ class EntityService
             ->orderBy('created_at', 'asc')
             ->get();
 
-        // 記念日を差分日数でソート
-        foreach ($entities as $key => $entity) {
-            if (count($entity->days) == 0) {
-                unset($entities[$key]);
-            } else {
-                // diff_days で sort
-                $sorted = array_values(Arr::sort($entity->days, function ($value) {
-                    return $value['diff_days'];
-                }));
-                unset($entities[$key]->days);
-                $entities[$key]->days = $sorted;
-            }
-        }
+        return $this->sortDaysByDiffDays($entities);
+    }
 
-        return $entities;
+    /**
+     * エンティティの記念日を差分日数でソート
+     *
+     * @param \Illuminate\Database\Eloquent\Collection $entities
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function sortDaysByDiffDays($entities)
+    {
+        return $entities->map(function ($entity) {
+            if ($entity->days->isEmpty()) {
+                return null;
+            }
+
+            // 記念日を diff_days でソート
+            $entity->days = $entity->days->sortBy('diff_days')->values();
+            
+            return $entity;
+        })->filter(); // null を除去
     }
 
     /**
