@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Day;
-use App\Models\Entity;
 use App\Http\Requests\StoreDayRequest;
 use App\Http\Requests\UpdateDayRequest;
 use App\Http\Resources\DayResource;
+use App\Models\Day;
+use App\Models\Entity;
 use App\Services\DayService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,16 +19,19 @@ class DaysController extends Controller
     {
         $this->dayService = $dayService;
     }
+
     public function index(Entity $entity)
     {
         $this->authorize('view', $entity);
         $days = $this->dayService->getByEntity($entity);
+
         return DayResource::collection($days);
     }
 
     public function create(Entity $entity): \Inertia\Response
     {
         $this->authorize('createDay', $entity);
+
         return Inertia::render('EditAnniversaryDay', [
             'entityData' => $entity,
             'dayData' => null,
@@ -49,6 +52,7 @@ class DaysController extends Controller
         $this->authorize('view', $entity);
         $this->authorize('view', $day);
         $day = $this->dayService->get($entity, $day);
+
         return new DayResource($day);
     }
 
@@ -56,6 +60,7 @@ class DaysController extends Controller
     {
         $this->authorize('update', $entity);
         $this->authorize('update', $day);
+
         return Inertia::render('EditAnniversaryDay', [
             'entityData' => $entity,
             'dayData' => $day,

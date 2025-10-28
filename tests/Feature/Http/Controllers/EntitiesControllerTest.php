@@ -24,15 +24,15 @@ class EntitiesControllerTest extends TestCase
     public function pickup_returns_entities_with_days_sorted_by_diff_days()
     {
         $entity = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // 異なる日付の記念日を作成
         Day::factory()->create([
             'entity_id' => $entity->id,
-            'anniv_at' => now()->addDays(10)->format('Y-m-d')
+            'anniv_at' => now()->addDays(10)->format('Y-m-d'),
         ]);
         Day::factory()->create([
             'entity_id' => $entity->id,
-            'anniv_at' => now()->addDays(5)->format('Y-m-d')
+            'anniv_at' => now()->addDays(5)->format('Y-m-d'),
         ]);
 
         $response = $this->actingAs($this->user)->get('/dashboard');
@@ -46,7 +46,7 @@ class EntitiesControllerTest extends TestCase
         // 記念日ありのエンティティ
         $entityWithDays = Entity::factory()->create(['user_id' => $this->user->id]);
         Day::factory()->create(['entity_id' => $entityWithDays->id]);
-        
+
         // 記念日なしのエンティティ
         Entity::factory()->create(['user_id' => $this->user->id]);
 
@@ -60,7 +60,7 @@ class EntitiesControllerTest extends TestCase
     {
         $entity1 = Entity::factory()->create(['user_id' => $this->user->id]);
         $entity2 = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // 他のユーザーのエンティティ
         $otherUser = User::factory()->create();
         Entity::factory()->create(['user_id' => $otherUser->id]);
@@ -75,18 +75,18 @@ class EntitiesControllerTest extends TestCase
     {
         $entityData = [
             'name' => '家族の記念日',
-            'desc' => '家族に関する記念日'
+            'desc' => '家族に関する記念日',
         ];
 
         $response = $this->actingAs($this->user)
             ->post('/entities', $entityData);
 
         $response->assertRedirect('/entities');
-        
+
         $this->assertDatabaseHas('entities', [
             'user_id' => $this->user->id,
             'name' => '家族の記念日',
-            'desc' => '家族に関する記念日'
+            'desc' => '家族に関する記念日',
         ]);
     }
 
@@ -103,7 +103,7 @@ class EntitiesControllerTest extends TestCase
     public function store_validates_name_max_length()
     {
         $entityData = [
-            'name' => str_repeat('あ', 256) // 256文字
+            'name' => str_repeat('あ', 256), // 256文字
         ];
 
         $response = $this->actingAs($this->user)
@@ -146,19 +146,19 @@ class EntitiesControllerTest extends TestCase
         $updateData = [
             'name' => '更新されたエンティティ',
             'desc' => '更新された説明',
-            'status' => false
+            'status' => false,
         ];
 
         $response = $this->actingAs($this->user)
             ->put("/entities/{$entity->id}", $updateData);
 
         $response->assertRedirect('/entities');
-        
+
         $this->assertDatabaseHas('entities', [
             'id' => $entity->id,
             'name' => '更新されたエンティティ',
             'desc' => '更新された説明',
-            'status' => false
+            'status' => false,
         ]);
     }
 
@@ -181,7 +181,7 @@ class EntitiesControllerTest extends TestCase
 
         $response = $this->actingAs($this->user)
             ->put("/entities/{$otherEntity->id}", [
-                'name' => 'ハックされたエンティティ'
+                'name' => 'ハックされたエンティティ',
             ]);
 
         $response->assertForbidden();
@@ -266,38 +266,38 @@ class EntitiesControllerTest extends TestCase
     {
         $entityData = [
             'name' => '日本語のエンティティ名',
-            'desc' => '日本語での説明文。特殊文字も含む：！？'
+            'desc' => '日本語での説明文。特殊文字も含む：！？',
         ];
 
         $response = $this->actingAs($this->user)
             ->post('/entities', $entityData);
 
         $response->assertRedirect('/entities');
-        
+
         $this->assertDatabaseHas('entities', [
             'user_id' => $this->user->id,
             'name' => '日本語のエンティティ名',
-            'desc' => '日本語での説明文。特殊文字も含む：！？'
+            'desc' => '日本語での説明文。特殊文字も含む：！？',
         ]);
 
         $entity = Entity::where('name', '日本語のエンティティ名')->first();
-        
+
         // 更新テスト
         $updateData = [
             'name' => '更新された日本語名',
             'desc' => '更新された日本語説明',
-            'status' => true
+            'status' => true,
         ];
 
         $response = $this->actingAs($this->user)
             ->put("/entities/{$entity->id}", $updateData);
 
         $response->assertRedirect('/entities');
-        
+
         $this->assertDatabaseHas('entities', [
             'id' => $entity->id,
             'name' => '更新された日本語名',
-            'desc' => '更新された日本語説明'
+            'desc' => '更新された日本語説明',
         ]);
     }
 }

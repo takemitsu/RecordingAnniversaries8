@@ -13,8 +13,11 @@ class EntityPolicyTest extends TestCase
     use RefreshDatabase;
 
     private EntityPolicy $policy;
+
     private User $user;
+
     private User $otherUser;
+
     private Entity $entity;
 
     protected function setUp(): void
@@ -100,13 +103,13 @@ class EntityPolicyTest extends TestCase
 
         $this->assertTrue($this->policy->view($user1, $entity));
         $this->assertFalse($this->policy->view($user2, $entity));
-        
+
         $this->assertTrue($this->policy->update($user1, $entity));
         $this->assertFalse($this->policy->update($user2, $entity));
-        
+
         $this->assertTrue($this->policy->delete($user1, $entity));
         $this->assertFalse($this->policy->delete($user2, $entity));
-        
+
         $this->assertTrue($this->policy->createDay($user1, $entity));
         $this->assertFalse($this->policy->createDay($user2, $entity));
     }

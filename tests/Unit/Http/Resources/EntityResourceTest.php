@@ -2,15 +2,14 @@
 
 namespace Tests\Unit\Http\Resources;
 
-use App\Http\Resources\DayResource;
 use App\Http\Resources\EntityResource;
 use App\Models\Day;
 use App\Models\Entity;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class EntityResourceTest extends TestCase
 {
@@ -31,7 +30,7 @@ class EntityResourceTest extends TestCase
             'user_id' => $this->user->id,
             'name' => '家族の記念日',
             'desc' => '家族に関する記念日集',
-            'status' => true
+            'status' => true,
         ]);
 
         $resource = new EntityResource($entity);
@@ -49,7 +48,7 @@ class EntityResourceTest extends TestCase
         $entity = Entity::factory()->create([
             'user_id' => $this->user->id,
             'created_at' => Carbon::parse('2024-01-15 10:30:45'),
-            'updated_at' => Carbon::parse('2024-01-20 15:20:30')
+            'updated_at' => Carbon::parse('2024-01-20 15:20:30'),
         ]);
 
         $resource = new EntityResource($entity);
@@ -64,7 +63,7 @@ class EntityResourceTest extends TestCase
     {
         $entity = Entity::factory()->create([
             'user_id' => $this->user->id,
-            'desc' => null
+            'desc' => null,
         ]);
 
         $resource = new EntityResource($entity);
@@ -78,7 +77,7 @@ class EntityResourceTest extends TestCase
     {
         $entity = Entity::factory()->create([
             'user_id' => $this->user->id,
-            'status' => false
+            'status' => false,
         ]);
 
         $resource = new EntityResource($entity);
@@ -92,10 +91,10 @@ class EntityResourceTest extends TestCase
     public function it_includes_days_count_when_counted()
     {
         $entity = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // 記念日を3つ作成
         Day::factory()->count(3)->create(['entity_id' => $entity->id]);
-        
+
         // withCount('days') を使用してロード
         $entityWithCount = Entity::withCount('days')->find($entity->id);
 
@@ -117,7 +116,7 @@ class EntityResourceTest extends TestCase
         // 実際のJSONレスポンスではこのキーは除外される
         // このテストでは、days_countが適切に処理されることを確認
         $this->assertTrue(
-            !array_key_exists('days_count', $result) || 
+            ! array_key_exists('days_count', $result) ||
             $result['days_count'] instanceof \Illuminate\Http\Resources\MissingValue ||
             is_int($result['days_count'])
         );
@@ -127,10 +126,10 @@ class EntityResourceTest extends TestCase
     public function it_includes_days_collection_when_loaded()
     {
         $entity = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // 記念日を2つ作成
         Day::factory()->count(2)->create(['entity_id' => $entity->id]);
-        
+
         // 関連データをロード
         $entity->load('days');
 
@@ -138,12 +137,12 @@ class EntityResourceTest extends TestCase
         $result = $resource->toArray(new Request());
 
         $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-        
+
         // AnonymousResourceCollectionをtoArrayで配列に変換してテスト
         $daysArray = $result['days']->toArray(new Request());
         $this->assertIsArray($daysArray);
         $this->assertCount(2, $daysArray);
-        
+
         // 各要素がDayResourceとして変換されていることを確認
         foreach ($daysArray as $dayData) {
             $this->assertIsArray($dayData);
@@ -173,7 +172,7 @@ class EntityResourceTest extends TestCase
         $entity = Entity::factory()->create([
             'user_id' => $this->user->id,
             'name' => '日本語のエンティティ名！？',
-            'desc' => '特殊文字を含む説明：！@#$%^&*()'
+            'desc' => '特殊文字を含む説明：！@#$%^&*()',
         ]);
 
         $resource = new EntityResource($entity);
@@ -197,7 +196,7 @@ class EntityResourceTest extends TestCase
             'desc',
             'status',
             'created_at',
-            'updated_at'
+            'updated_at',
         ];
 
         foreach ($expectedFields as $field) {
@@ -209,7 +208,7 @@ class EntityResourceTest extends TestCase
     public function it_handles_empty_entity_with_loaded_empty_days()
     {
         $entity = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // 空の関連データをロード
         $entity->load('days');
 
@@ -217,7 +216,7 @@ class EntityResourceTest extends TestCase
         $result = $resource->toArray(new Request());
 
         $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-        
+
         $daysArray = $result['days']->toArray(new Request());
         $this->assertIsArray($daysArray);
         $this->assertEmpty($daysArray);
@@ -228,7 +227,7 @@ class EntityResourceTest extends TestCase
     {
         $entity = Entity::factory()->create([
             'user_id' => $this->user->id,
-            'status' => true
+            'status' => true,
         ]);
 
         $resource = new EntityResource($entity);
@@ -238,15 +237,15 @@ class EntityResourceTest extends TestCase
         $this->assertIsInt($result['id']);
         $this->assertIsString($result['name']);
         $this->assertIsBool($result['status']);
-        
+
         if ($result['desc'] !== null) {
             $this->assertIsString($result['desc']);
         }
-        
+
         if ($result['created_at'] !== null) {
             $this->assertIsString($result['created_at']);
         }
-        
+
         if ($result['updated_at'] !== null) {
             $this->assertIsString($result['updated_at']);
         }
@@ -256,10 +255,10 @@ class EntityResourceTest extends TestCase
     public function it_works_with_both_days_and_days_count()
     {
         $entity = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // 記念日を2つ作成
         Day::factory()->count(2)->create(['entity_id' => $entity->id]);
-        
+
         // 両方の関連データをロード
         $entityWithBoth = Entity::withCount('days')->with('days')->find($entity->id);
 
@@ -268,7 +267,7 @@ class EntityResourceTest extends TestCase
 
         $this->assertEquals(2, $result['days_count']);
         $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-        
+
         $daysArray = $result['days']->toArray(new Request());
         $this->assertCount(2, $daysArray);
     }
@@ -280,9 +279,9 @@ class EntityResourceTest extends TestCase
             'user_id' => $this->user->id,
             'name' => 'テストエンティティ',
             'desc' => 'テスト説明',
-            'status' => false
+            'status' => false,
         ]);
-        
+
         Day::factory()->create(['entity_id' => $entity->id]);
         $entity->load('days');
 
@@ -293,11 +292,11 @@ class EntityResourceTest extends TestCase
         $this->assertEquals('テストエンティティ', $result['name']);
         $this->assertEquals('テスト説明', $result['desc']);
         $this->assertFalse($result['status']);
-        
+
         // 関連データも正しく含まれていることを確認
         $this->assertArrayHasKey('days', $result);
         $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-        
+
         $daysArray = $result['days']->toArray(new Request());
         $this->assertCount(1, $daysArray);
     }
@@ -307,7 +306,7 @@ class EntityResourceTest extends TestCase
     {
         // Factoryを使って作成し、タイムスタンプを手動でnullに設定
         $entity = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // タイムスタンプをnullに設定してテスト用データを作成
         $entity->created_at = null;
         $entity->updated_at = null;

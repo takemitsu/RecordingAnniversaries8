@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Day;
-use App\Models\Entity;
 use App\Models\User;
 
 class DayPolicy

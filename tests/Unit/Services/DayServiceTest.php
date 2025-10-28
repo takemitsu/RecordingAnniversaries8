@@ -14,7 +14,9 @@ class DayServiceTest extends TestCase
     use RefreshDatabase;
 
     private DayService $service;
+
     private User $user;
+
     private Entity $entity;
 
     protected function setUp(): void
@@ -30,7 +32,7 @@ class DayServiceTest extends TestCase
     {
         $day1 = Day::factory()->create(['entity_id' => $this->entity->id]);
         $day2 = Day::factory()->create(['entity_id' => $this->entity->id]);
-        
+
         // 他のエンティティの記念日
         $otherEntity = Entity::factory()->create(['user_id' => $this->user->id]);
         Day::factory()->create(['entity_id' => $otherEntity->id]);
@@ -48,7 +50,7 @@ class DayServiceTest extends TestCase
         $data = [
             'name' => 'テスト記念日',
             'desc' => 'テスト説明',
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $day = $this->service->create($this->entity, $data);
@@ -57,12 +59,12 @@ class DayServiceTest extends TestCase
         $this->assertEquals('テスト説明', $day->desc);
         $this->assertEquals('2023-12-25', $day->anniv_at);
         $this->assertEquals($this->entity->id, $day->entity_id);
-        
+
         $this->assertDatabaseHas('days', [
             'name' => 'テスト記念日',
             'desc' => 'テスト説明',
             'anniv_at' => '2023-12-25',
-            'entity_id' => $this->entity->id
+            'entity_id' => $this->entity->id,
         ]);
     }
 
@@ -72,7 +74,7 @@ class DayServiceTest extends TestCase
         $data = [
             'name' => 'テスト記念日',
             'desc' => null,
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $day = $this->service->create($this->entity, $data);
@@ -100,13 +102,13 @@ class DayServiceTest extends TestCase
             'entity_id' => $this->entity->id,
             'name' => '古い名前',
             'desc' => '古い説明',
-            'anniv_at' => '2023-01-01'
+            'anniv_at' => '2023-01-01',
         ]);
 
         $updateData = [
             'name' => '新しい名前',
             'desc' => '新しい説明',
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $updatedDay = $this->service->update($this->entity, $day, $updateData);
@@ -114,12 +116,12 @@ class DayServiceTest extends TestCase
         $this->assertEquals('新しい名前', $updatedDay->name);
         $this->assertEquals('新しい説明', $updatedDay->desc);
         $this->assertEquals('2023-12-25', $updatedDay->anniv_at);
-        
+
         $this->assertDatabaseHas('days', [
             'id' => $day->id,
             'name' => '新しい名前',
             'desc' => '新しい説明',
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ]);
     }
 
@@ -128,13 +130,13 @@ class DayServiceTest extends TestCase
     {
         $day = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'desc' => '古い説明'
+            'desc' => '古い説明',
         ]);
 
         $updateData = [
             'name' => 'テスト',
             'desc' => null,
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $updatedDay = $this->service->update($this->entity, $day, $updateData);
@@ -158,14 +160,14 @@ class DayServiceTest extends TestCase
         $data = [
             'name' => '誕生日',
             'desc' => '大切な人の誕生日',
-            'anniv_at' => '1990-05-15'
+            'anniv_at' => '1990-05-15',
         ];
 
         $day = $this->service->create($this->entity, $data);
 
         $this->assertNotNull($day->id);
         $this->assertTrue($day->exists);
-        
+
         // データベースから再取得して確認
         $savedDay = Day::find($day->id);
         $this->assertNotNull($savedDay);
@@ -180,13 +182,13 @@ class DayServiceTest extends TestCase
         $day = Day::factory()->create([
             'entity_id' => $this->entity->id,
             'name' => '結婚記念日',
-            'anniv_at' => '2020-06-20'
+            'anniv_at' => '2020-06-20',
         ]);
 
         $updateData = [
             'name' => '結婚記念日（修正）',
             'desc' => '特別な日',
-            'anniv_at' => '2020-06-21'
+            'anniv_at' => '2020-06-21',
         ];
 
         $this->service->update($this->entity, $day, $updateData);

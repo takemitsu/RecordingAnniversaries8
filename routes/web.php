@@ -15,7 +15,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-Route::get('/years', function() {
+Route::get('/years', function () {
     return Inertia::render('Years');
 })->name('years');
 
@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/dashboard',  [EntitiesController::class, 'pickup'])->name('dashboard');
+    Route::get('/dashboard', [EntitiesController::class, 'pickup'])->name('dashboard');
 
     // apiResource では足りないモノを追加。apiResourceの前に定義しないといけない（"create"を{entity}で吸収されるため)
     Route::get('/entities/create', [EntitiesController::class, 'create'])->name('entities.create');

@@ -21,7 +21,7 @@ class DayRequestTest extends TestCase
         // 必須フィールドのテスト
         $validator = Validator::make([], $rules);
         $this->assertTrue($validator->fails());
-        
+
         $errors = $validator->errors();
         $this->assertTrue($errors->has('name'));
         $this->assertTrue($errors->has('anniv_at'));
@@ -36,7 +36,7 @@ class DayRequestTest extends TestCase
         $validData = [
             'name' => '誕生日',
             'desc' => '大切な人の誕生日',
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $validator = Validator::make($validData, $rules);
@@ -51,7 +51,7 @@ class DayRequestTest extends TestCase
 
         $invalidData = [
             'name' => str_repeat('あ', 256), // 256文字
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $validator = Validator::make($invalidData, $rules);
@@ -67,7 +67,7 @@ class DayRequestTest extends TestCase
 
         $invalidData = [
             'name' => '記念日',
-            'anniv_at' => '2023/12/25' // 無効な形式
+            'anniv_at' => '2023/12/25', // 無効な形式
         ];
 
         $validator = Validator::make($invalidData, $rules);
@@ -84,7 +84,7 @@ class DayRequestTest extends TestCase
         $validData = [
             'name' => '記念日',
             'desc' => null,
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $validator = Validator::make($validData, $rules);
@@ -126,7 +126,7 @@ class DayRequestTest extends TestCase
         $validData = [
             'name' => '更新された記念日',
             'desc' => '更新された説明',
-            'anniv_at' => '2024-01-01'
+            'anniv_at' => '2024-01-01',
         ];
 
         $validator = Validator::make($validData, $rules);
@@ -159,9 +159,9 @@ class DayRequestTest extends TestCase
         foreach ($validDates as $date) {
             $data = [
                 'name' => '記念日',
-                'anniv_at' => $date
+                'anniv_at' => $date,
             ];
-            
+
             $validator = Validator::make($data, $rules);
             $this->assertTrue($validator->passes(), "Date {$date} should be valid");
         }
@@ -177,9 +177,9 @@ class DayRequestTest extends TestCase
         foreach ($invalidDates as $date) {
             $data = [
                 'name' => '記念日',
-                'anniv_at' => $date
+                'anniv_at' => $date,
             ];
-            
+
             $validator = Validator::make($data, $rules);
             $this->assertTrue($validator->fails(), "Date {$date} should be invalid");
         }

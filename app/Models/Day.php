@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Services\DateCalculationService;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,6 +22,7 @@ class Day extends Model
     public function getDiffDaysAttribute()
     {
         $dateCalculationService = app(DateCalculationService::class);
+
         return $dateCalculationService->calculateDiffDays($this->anniv_at);
     }
 }

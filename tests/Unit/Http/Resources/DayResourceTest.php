@@ -7,16 +7,17 @@ use App\Http\Resources\EntityResource;
 use App\Models\Day;
 use App\Models\Entity;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class DayResourceTest extends TestCase
 {
     use RefreshDatabase;
 
     private User $user;
+
     private Entity $entity;
 
     protected function setUp(): void
@@ -33,7 +34,7 @@ class DayResourceTest extends TestCase
             'entity_id' => $this->entity->id,
             'name' => '誕生日',
             'desc' => '家族の誕生日',
-            'anniv_at' => '2024-01-15'
+            'anniv_at' => '2024-01-15',
         ]);
 
         $resource = new DayResource($day);
@@ -51,7 +52,7 @@ class DayResourceTest extends TestCase
     {
         $day = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'anniv_at' => '2024-01-15'
+            'anniv_at' => '2024-01-15',
         ]);
 
         $resource = new DayResource($day);
@@ -66,9 +67,9 @@ class DayResourceTest extends TestCase
         // まず通常のDayを作成してからanniv_atをnullに設定
         $day = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'anniv_at' => '2024-01-01'
+            'anniv_at' => '2024-01-01',
         ]);
-        
+
         // anniv_atをnullに設定
         $day->anniv_at = null;
 
@@ -87,7 +88,7 @@ class DayResourceTest extends TestCase
         // 未来の日付
         $futureDay = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'anniv_at' => Carbon::now()->addDays(10)->format('Y-m-d')
+            'anniv_at' => Carbon::now()->addDays(10)->format('Y-m-d'),
         ]);
 
         $resource = new DayResource($futureDay);
@@ -99,7 +100,7 @@ class DayResourceTest extends TestCase
         // 過去の日付
         $pastDay = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'anniv_at' => Carbon::now()->subDays(10)->format('Y-m-d')
+            'anniv_at' => Carbon::now()->subDays(10)->format('Y-m-d'),
         ]);
 
         $resource = new DayResource($pastDay);
@@ -114,7 +115,7 @@ class DayResourceTest extends TestCase
     {
         $todayDay = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'anniv_at' => Carbon::now()->format('Y-m-d')
+            'anniv_at' => Carbon::now()->format('Y-m-d'),
         ]);
 
         $resource = new DayResource($todayDay);
@@ -129,7 +130,7 @@ class DayResourceTest extends TestCase
     {
         $day = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'anniv_at' => Carbon::now()->addDays(5)->format('Y-m-d')
+            'anniv_at' => Carbon::now()->addDays(5)->format('Y-m-d'),
         ]);
 
         $resource = new DayResource($day);
@@ -142,7 +143,7 @@ class DayResourceTest extends TestCase
     public function it_includes_entity_when_loaded()
     {
         $day = Day::factory()->create([
-            'entity_id' => $this->entity->id
+            'entity_id' => $this->entity->id,
         ]);
         $day->load('entity');
 
@@ -156,7 +157,7 @@ class DayResourceTest extends TestCase
     public function it_does_not_include_entity_when_not_loaded()
     {
         $day = Day::factory()->create([
-            'entity_id' => $this->entity->id
+            'entity_id' => $this->entity->id,
         ]);
 
         $resource = new DayResource($day);
@@ -175,7 +176,7 @@ class DayResourceTest extends TestCase
             'entity_id' => $this->entity->id,
             'name' => '記念日の名前！？',
             'desc' => '特殊文字を含む説明：！@#$%^&*()',
-            'anniv_at' => '2024-12-31'
+            'anniv_at' => '2024-12-31',
         ]);
 
         $resource = new DayResource($day);
@@ -198,7 +199,7 @@ class DayResourceTest extends TestCase
         foreach ($testDates as $inputDate => $expectedFormat) {
             $day = Day::factory()->create([
                 'entity_id' => $this->entity->id,
-                'anniv_at' => $inputDate
+                'anniv_at' => $inputDate,
             ]);
 
             $resource = new DayResource($day);
@@ -213,7 +214,7 @@ class DayResourceTest extends TestCase
     {
         $day = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'anniv_at' => '2024-01-15'
+            'anniv_at' => '2024-01-15',
         ]);
 
         $resource = new DayResource($day);
@@ -221,14 +222,14 @@ class DayResourceTest extends TestCase
 
         $expectedFields = [
             'id',
-            'entity_id', 
+            'entity_id',
             'name',
             'desc',
             'anniv_at',
             'diff_days',
             'formatted_date',
             'is_future',
-            'is_today'
+            'is_today',
         ];
 
         foreach ($expectedFields as $field) {
@@ -241,7 +242,7 @@ class DayResourceTest extends TestCase
     {
         $day = Day::factory()->create([
             'entity_id' => $this->entity->id,
-            'desc' => null
+            'desc' => null,
         ]);
 
         $resource = new DayResource($day);

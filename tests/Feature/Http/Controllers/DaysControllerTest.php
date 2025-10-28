@@ -13,6 +13,7 @@ class DaysControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Entity $entity;
 
     protected function setUp(): void
@@ -55,19 +56,19 @@ class DaysControllerTest extends TestCase
         $dayData = [
             'name' => '誕生日',
             'desc' => '大切な人の誕生日',
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ];
 
         $response = $this->actingAs($this->user)
             ->post("/entities/{$this->entity->id}/days", $dayData);
 
         $response->assertRedirect('/entities');
-        
+
         $this->assertDatabaseHas('days', [
             'entity_id' => $this->entity->id,
             'name' => '誕生日',
             'desc' => '大切な人の誕生日',
-            'anniv_at' => '2023-12-25'
+            'anniv_at' => '2023-12-25',
         ]);
     }
 
@@ -85,7 +86,7 @@ class DaysControllerTest extends TestCase
     {
         $dayData = [
             'name' => '記念日',
-            'anniv_at' => 'invalid-date'
+            'anniv_at' => 'invalid-date',
         ];
 
         $response = $this->actingAs($this->user)
@@ -106,7 +107,7 @@ class DaysControllerTest extends TestCase
             ->assertJsonFragment([
                 'id' => $day->id,
                 'name' => $day->name,
-                'anniv_at' => $day->anniv_at
+                'anniv_at' => $day->anniv_at,
             ]);
     }
 
@@ -131,19 +132,19 @@ class DaysControllerTest extends TestCase
         $updateData = [
             'name' => '更新された名前',
             'desc' => '更新された説明',
-            'anniv_at' => '2024-01-01'
+            'anniv_at' => '2024-01-01',
         ];
 
         $response = $this->actingAs($this->user)
             ->put("/entities/{$this->entity->id}/days/{$day->id}", $updateData);
 
         $response->assertRedirect('/entities');
-        
+
         $this->assertDatabaseHas('days', [
             'id' => $day->id,
             'name' => '更新された名前',
             'desc' => '更新された説明',
-            'anniv_at' => '2024-01-01'
+            'anniv_at' => '2024-01-01',
         ]);
     }
 

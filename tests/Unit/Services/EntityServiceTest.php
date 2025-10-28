@@ -15,6 +15,7 @@ class EntityServiceTest extends TestCase
     use RefreshDatabase;
 
     private EntityService $service;
+
     private User $user;
 
     protected function setUp(): void
@@ -31,7 +32,7 @@ class EntityServiceTest extends TestCase
         // エンティティと記念日を作成
         $entityWithDays = Entity::factory()->create(['user_id' => $this->user->id]);
         Day::factory()->create(['entity_id' => $entityWithDays->id, 'anniv_at' => '2023-12-25']);
-        
+
         // 記念日のないエンティティ
         Entity::factory()->create(['user_id' => $this->user->id]);
 
@@ -45,26 +46,26 @@ class EntityServiceTest extends TestCase
     public function getEntitiesForPickup_sorts_days_by_diff_days()
     {
         $entity = Entity::factory()->create(['user_id' => $this->user->id]);
-        
+
         // 異なる日付の記念日を作成（順序をバラバラに）
         $day1 = Day::factory()->create([
-            'entity_id' => $entity->id, 
-            'anniv_at' => now()->addDays(10)->format('Y-m-d')
+            'entity_id' => $entity->id,
+            'anniv_at' => now()->addDays(10)->format('Y-m-d'),
         ]);
         $day2 = Day::factory()->create([
-            'entity_id' => $entity->id, 
-            'anniv_at' => now()->addDays(5)->format('Y-m-d')
+            'entity_id' => $entity->id,
+            'anniv_at' => now()->addDays(5)->format('Y-m-d'),
         ]);
         $day3 = Day::factory()->create([
-            'entity_id' => $entity->id, 
-            'anniv_at' => now()->addDays(15)->format('Y-m-d')
+            'entity_id' => $entity->id,
+            'anniv_at' => now()->addDays(15)->format('Y-m-d'),
         ]);
 
         $result = $this->service->getEntitiesForPickup();
 
         $this->assertCount(1, $result);
         $sortedDays = $result->first()->days;
-        
+
         // diff_days で昇順にソートされているかチェック
         $this->assertEquals($day2->id, $sortedDays[0]->id); // 5日後
         $this->assertEquals($day1->id, $sortedDays[1]->id); // 10日後
@@ -75,11 +76,11 @@ class EntityServiceTest extends TestCase
     public function getEntitiesForPickup_returns_only_current_user_entities()
     {
         $anotherUser = User::factory()->create();
-        
+
         // 現在のユーザーのエンティティ
         $myEntity = Entity::factory()->create(['user_id' => $this->user->id]);
         Day::factory()->create(['entity_id' => $myEntity->id]);
-        
+
         // 他のユーザーのエンティティ
         $otherEntity = Entity::factory()->create(['user_id' => $anotherUser->id]);
         Day::factory()->create(['entity_id' => $otherEntity->id]);
@@ -96,7 +97,7 @@ class EntityServiceTest extends TestCase
         // 記念日ありのエンティティ
         $entityWithDays = Entity::factory()->create(['user_id' => $this->user->id]);
         Day::factory()->create(['entity_id' => $entityWithDays->id]);
-        
+
         // 記念日なしのエンティティ
         $entityWithoutDays = Entity::factory()->create(['user_id' => $this->user->id]);
 
@@ -112,7 +113,7 @@ class EntityServiceTest extends TestCase
     {
         $data = [
             'name' => 'テストエンティティ',
-            'desc' => 'テスト説明'
+            'desc' => 'テスト説明',
         ];
 
         $entity = $this->service->create($data);
@@ -123,7 +124,7 @@ class EntityServiceTest extends TestCase
         $this->assertDatabaseHas('entities', [
             'name' => 'テストエンティティ',
             'desc' => 'テスト説明',
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
     }
 
@@ -132,7 +133,7 @@ class EntityServiceTest extends TestCase
     {
         $data = [
             'name' => 'テストエンティティ',
-            'desc' => null
+            'desc' => null,
         ];
 
         $entity = $this->service->create($data);
@@ -161,13 +162,13 @@ class EntityServiceTest extends TestCase
             'user_id' => $this->user->id,
             'name' => '古い名前',
             'desc' => '古い説明',
-            'status' => false
+            'status' => false,
         ]);
 
         $updateData = [
             'name' => '新しい名前',
             'desc' => '新しい説明',
-            'status' => true
+            'status' => true,
         ];
 
         $updatedEntity = $this->service->update($entity, $updateData);

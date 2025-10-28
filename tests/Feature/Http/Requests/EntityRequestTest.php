@@ -21,7 +21,7 @@ class EntityRequestTest extends TestCase
         // 必須フィールドのテスト
         $validator = Validator::make([], $rules);
         $this->assertTrue($validator->fails());
-        
+
         $errors = $validator->errors();
         $this->assertTrue($errors->has('name'));
         $this->assertFalse($errors->has('desc')); // desc は必須ではない
@@ -35,7 +35,7 @@ class EntityRequestTest extends TestCase
 
         $validData = [
             'name' => '家族の記念日',
-            'desc' => '家族に関する大切な記念日を管理'
+            'desc' => '家族に関する大切な記念日を管理',
         ];
 
         $validator = Validator::make($validData, $rules);
@@ -65,7 +65,7 @@ class EntityRequestTest extends TestCase
 
         $validData = [
             'name' => 'エンティティ名',
-            'desc' => null
+            'desc' => null,
         ];
 
         $validator = Validator::make($validData, $rules);
@@ -80,7 +80,7 @@ class EntityRequestTest extends TestCase
 
         $validData = [
             'name' => 'エンティティ名',
-            'desc' => ''
+            'desc' => '',
         ];
 
         $validator = Validator::make($validData, $rules);
@@ -112,7 +112,7 @@ class EntityRequestTest extends TestCase
 
         // Store には status がない
         $this->assertArrayNotHasKey('status', $storeRules);
-        
+
         // Update には status がある
         $this->assertArrayHasKey('status', $updateRules);
         $this->assertEquals('boolean', $updateRules['status']);
@@ -127,7 +127,7 @@ class EntityRequestTest extends TestCase
         // 有効な status 値
         $validData = [
             'name' => 'エンティティ名',
-            'status' => true
+            'status' => true,
         ];
         $validator = Validator::make($validData, $rules);
         $this->assertTrue($validator->passes());
@@ -139,7 +139,7 @@ class EntityRequestTest extends TestCase
         // 無効な status 値
         $invalidData = [
             'name' => 'エンティティ名',
-            'status' => 'invalid'
+            'status' => 'invalid',
         ];
         $validator = Validator::make($invalidData, $rules);
         $this->assertTrue($validator->fails());
@@ -165,7 +165,7 @@ class EntityRequestTest extends TestCase
         $validData = [
             'name' => '更新されたエンティティ',
             'desc' => '更新された説明',
-            'status' => true
+            'status' => true,
         ];
 
         $validator = Validator::make($validData, $rules);
@@ -209,7 +209,7 @@ class EntityRequestTest extends TestCase
         $tooLongName = str_repeat('あ', 256);
         $data = ['name' => $tooLongName];
         $validator = Validator::make($data, $rules);
-        $this->assertTrue($validator->fails(), "Name should be too long");
+        $this->assertTrue($validator->fails(), 'Name should be too long');
     }
 
     /** @test */
@@ -220,7 +220,7 @@ class EntityRequestTest extends TestCase
 
         $validData = [
             'name' => 'テスト',
-            'desc' => '特殊文字: !@#$%^&*()_+-=[]{}|;:,.<>?/~`'
+            'desc' => '特殊文字: !@#$%^&*()_+-=[]{}|;:,.<>?/~`',
         ];
 
         $validator = Validator::make($validData, $rules);

@@ -26,7 +26,7 @@ class EntityService
     /**
      * エンティティの記念日を差分日数でソート
      *
-     * @param \Illuminate\Database\Eloquent\Collection $entities
+     * @param  \Illuminate\Database\Eloquent\Collection  $entities
      * @return \Illuminate\Database\Eloquent\Collection
      */
     private function sortDaysByDiffDays($entities)
@@ -38,7 +38,7 @@ class EntityService
 
             // 記念日を diff_days でソート
             $entity->days = $entity->days->sortBy('diff_days')->values();
-            
+
             return $entity;
         })->filter(); // null を除去
     }
@@ -58,9 +58,6 @@ class EntityService
 
     /**
      * エンティティを作成
-     *
-     * @param array $data
-     * @return Entity
      */
     public function create(array $data): Entity
     {
@@ -75,9 +72,6 @@ class EntityService
 
     /**
      * エンティティを記念日と共に取得
-     *
-     * @param Entity $entity
-     * @return Entity
      */
     public function getWithDays(Entity $entity): Entity
     {
@@ -86,10 +80,6 @@ class EntityService
 
     /**
      * エンティティを更新
-     *
-     * @param Entity $entity
-     * @param array $data
-     * @return Entity
      */
     public function update(Entity $entity, array $data): Entity
     {
@@ -103,9 +93,6 @@ class EntityService
 
     /**
      * エンティティを削除
-     *
-     * @param Entity $entity
-     * @return void
      */
     public function delete(Entity $entity): void
     {

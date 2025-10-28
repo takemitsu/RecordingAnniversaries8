@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Entity;
 use App\Http\Requests\StoreEntityRequest;
 use App\Http\Requests\UpdateEntityRequest;
 use App\Http\Resources\EntityResource;
+use App\Models\Entity;
 use App\Services\EntityService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Inertia\Inertia;
 
 class EntitiesController extends Controller
@@ -19,6 +17,7 @@ class EntitiesController extends Controller
     {
         $this->entityService = $entityService;
     }
+
     public function pickup(): \Inertia\Response
     {
         $entities = $this->entityService->getEntitiesForPickup();
@@ -45,7 +44,6 @@ class EntitiesController extends Controller
         ]);
     }
 
-
     public function store(StoreEntityRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->entityService->create($request->validated());
@@ -53,24 +51,23 @@ class EntitiesController extends Controller
         return redirect()->route('entities.index');
     }
 
-
     public function show(Entity $entity)
     {
         $this->authorize('view', $entity);
         $entity = $this->entityService->getWithDays($entity);
+
         return new EntityResource($entity);
     }
-
 
     public function edit(Entity $entity): \Inertia\Response
     {
         $this->authorize('update', $entity);
+
         return Inertia::render('EditEntity', [
             'entityData' => $entity,
             'status' => session('status'),
         ]);
     }
-
 
     public function update(UpdateEntityRequest $request, Entity $entity): \Illuminate\Http\RedirectResponse
     {
@@ -79,7 +76,6 @@ class EntitiesController extends Controller
 
         return redirect()->route('entities.index');
     }
-
 
     public function destroy(Entity $entity): \Illuminate\Http\RedirectResponse
     {

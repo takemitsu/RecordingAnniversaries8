@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\GoogleAuthService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
-
 
 class SocialiteController extends Controller
 {
@@ -18,10 +16,10 @@ class SocialiteController extends Controller
         $this->googleAuthService = $googleAuthService;
     }
 
-
     public function redirectGoogle(): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
     {
         Log::info('redirect!!');
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -34,7 +32,7 @@ class SocialiteController extends Controller
         if ($authUser) {
             return $this->handleLoggedInUser($authUser, $googleId);
         }
-        
+
         return $this->handleGuestUser($googleUser, $googleId);
     }
 
@@ -44,8 +42,8 @@ class SocialiteController extends Controller
     private function handleLoggedInUser(User $authUser, string $googleId)
     {
         $result = $this->googleAuthService->linkGoogleAccount($authUser, $googleId);
-        
-        if (!$result['success']) {
+
+        if (! $result['success']) {
             return redirect()->route('login')->with('status', $result['message']);
         }
 
@@ -65,8 +63,8 @@ class SocialiteController extends Controller
 
         // 新規ユーザー作成を試行
         $result = $this->googleAuthService->createUserFromGoogle($googleUser);
-        
-        if (!$result['success']) {
+
+        if (! $result['success']) {
             return redirect()->route('login')->with('status', $result['message']);
         }
 

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class TestController extends Controller
 {
-    private function outputLog(Request $request, null|string $id = null)
+    private function outputLog(Request $request, ?string $id = null)
     {
         $log = [
             'method' => $request->method(),
@@ -15,10 +15,11 @@ class TestController extends Controller
             'ip' => $request->ip(),
             'agent' => $request->header('User-Agent'),
             'request' => $request->all(),
-            'id' => $id ?? "nothing",
+            'id' => $id ?? 'nothing',
         ];
         // Log::info(print_r($log , true));
-        Log::info(json_encode($log , JSON_PRETTY_PRINT));
+        Log::info(json_encode($log, JSON_PRETTY_PRINT));
+
         return $log;
     }
 
@@ -51,7 +52,7 @@ class TestController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        return $this->outputLog($request,$id);
+        return $this->outputLog($request, $id);
     }
 
     /**
@@ -59,7 +60,7 @@ class TestController extends Controller
      */
     public function edit(Request $request, string $id)
     {
-        return $this->outputLog($request,$id);
+        return $this->outputLog($request, $id);
     }
 
     /**
@@ -67,7 +68,7 @@ class TestController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        return $this->outputLog($request,$id);
+        return $this->outputLog($request, $id);
     }
 
     /**
@@ -75,6 +76,6 @@ class TestController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        return $this->outputLog($request,$id);
+        return $this->outputLog($request, $id);
     }
 }

@@ -14,9 +14,13 @@ class DayPolicyTest extends TestCase
     use RefreshDatabase;
 
     private DayPolicy $policy;
+
     private User $user;
+
     private User $otherUser;
+
     private Entity $entity;
+
     private Day $day;
 
     protected function setUp(): void
@@ -118,10 +122,10 @@ class DayPolicyTest extends TestCase
 
         $this->assertTrue($this->policy->view($user1, $day));
         $this->assertFalse($this->policy->view($user2, $day));
-        
+
         $this->assertTrue($this->policy->update($user1, $day));
         $this->assertFalse($this->policy->update($user2, $day));
-        
+
         $this->assertTrue($this->policy->delete($user1, $day));
         $this->assertFalse($this->policy->delete($user2, $day));
     }
@@ -131,7 +135,7 @@ class DayPolicyTest extends TestCase
     {
         // 記念日が正しくエンティティの所有者を参照できることを確認
         $this->assertEquals($this->user->id, $this->day->entity->user_id);
-        
+
         // 関係性を通じた認可が正しく動作することを確認
         $result = $this->policy->view($this->user, $this->day);
         $this->assertTrue($result);

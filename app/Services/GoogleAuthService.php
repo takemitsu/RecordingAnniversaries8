@@ -11,8 +11,8 @@ class GoogleAuthService
     /**
      * 既存ユーザーと Google アカウントを紐づけ
      *
-     * @param User $authUser 現在ログイン中のユーザー
-     * @param string $googleId Google ID
+     * @param  User  $authUser  現在ログイン中のユーザー
+     * @param  string  $googleId  Google ID
      * @return array ['success' => bool, 'message' => string|null]
      */
     public function linkGoogleAccount(User $authUser, string $googleId): array
@@ -25,7 +25,7 @@ class GoogleAuthService
         if ($existingUser) {
             return [
                 'success' => false,
-                'message' => 'used_other_user'
+                'message' => 'used_other_user',
             ];
         }
 
@@ -39,15 +39,16 @@ class GoogleAuthService
     /**
      * Google アカウントでログインを試行
      *
-     * @param string $googleId Google ID
+     * @param  string  $googleId  Google ID
      * @return User|null ログインできた場合はユーザー、できなかった場合は null
      */
     public function attemptGoogleLogin(string $googleId): ?User
     {
         $user = User::where('google_id', $googleId)->first();
-        
+
         if ($user) {
             Auth::login($user);
+
             return $user;
         }
 
@@ -57,19 +58,19 @@ class GoogleAuthService
     /**
      * Google アカウント情報から新規ユーザーを作成
      *
-     * @param SocialiteUser $googleUser Socialite ユーザー情報
+     * @param  SocialiteUser  $googleUser  Socialite ユーザー情報
      * @return array ['success' => bool, 'user' => User|null, 'message' => string|null]
      */
     public function createUserFromGoogle(SocialiteUser $googleUser): array
     {
         // メールアドレスが既に登録されているかチェック
         $existingUser = User::where('email', $googleUser->getEmail())->first();
-        
+
         if ($existingUser) {
             return [
                 'success' => false,
                 'user' => null,
-                'message' => 'email_already_exist'
+                'message' => 'email_already_exist',
             ];
         }
 
@@ -85,7 +86,7 @@ class GoogleAuthService
         return [
             'success' => true,
             'user' => $user,
-            'message' => null
+            'message' => null,
         ];
     }
 }
