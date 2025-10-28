@@ -16,7 +16,7 @@ export default function EntityCard({ entity, actions, dayActions }: EntityCardPr
 
             {actions && <div className="flex justify-end mb-2">{actions}</div>}
 
-            {entity.days.map((day) => (
+            {entity.days?.map((day) => (
                 <AnniversaryDayCard key={`D${day.id}`} day={day}>
                     {dayActions?.(entity, day)}
                 </AnniversaryDayCard>

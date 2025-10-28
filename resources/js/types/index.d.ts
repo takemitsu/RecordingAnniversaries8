@@ -21,7 +21,7 @@ export interface Entity {
     name: string;
     desc: string;
     status: number;
-    days: Day[];
+    days?: Day[];
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

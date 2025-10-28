@@ -136,15 +136,13 @@ class EntityResourceTest extends TestCase
         $resource = new EntityResource($entity);
         $result = $resource->toArray(new Request());
 
-        $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-
-        // AnonymousResourceCollectionをtoArrayで配列に変換してテスト
-        $daysArray = $result['days']->toArray(new Request());
-        $this->assertIsArray($daysArray);
-        $this->assertCount(2, $daysArray);
+        // resolve() を使っているため配列として返される
+        $this->assertArrayHasKey('days', $result);
+        $this->assertIsArray($result['days']);
+        $this->assertCount(2, $result['days']);
 
         // 各要素がDayResourceとして変換されていることを確認
-        foreach ($daysArray as $dayData) {
+        foreach ($result['days'] as $dayData) {
             $this->assertIsArray($dayData);
             $this->assertArrayHasKey('id', $dayData);
             $this->assertArrayHasKey('name', $dayData);
@@ -160,10 +158,10 @@ class EntityResourceTest extends TestCase
         $resource = new EntityResource($entity);
         $result = $resource->toArray(new Request());
 
-        // whenLoaded('days') は関連がロードされていない場合はAnonymousResourceCollectionを返すが
-        // データがnullの場合はエラーになる可能性がある。実際の挙動を確認
+        // when() は未ロード時に MissingValue を返す
+        // toArray() では days キーは存在するが、実際のHTTPレスポンスではフィルタリングされる
         $this->assertArrayHasKey('days', $result);
-        $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
+        $this->assertInstanceOf(\Illuminate\Http\Resources\MissingValue::class, $result['days']);
     }
 
     /** @test */
@@ -215,11 +213,10 @@ class EntityResourceTest extends TestCase
         $resource = new EntityResource($entity);
         $result = $resource->toArray(new Request());
 
-        $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-
-        $daysArray = $result['days']->toArray(new Request());
-        $this->assertIsArray($daysArray);
-        $this->assertEmpty($daysArray);
+        // ロード済みなので days キーは存在し、空配列が返される
+        $this->assertArrayHasKey('days', $result);
+        $this->assertIsArray($result['days']);
+        $this->assertEmpty($result['days']);
     }
 
     /** @test */
@@ -266,10 +263,9 @@ class EntityResourceTest extends TestCase
         $result = $resource->toArray(new Request());
 
         $this->assertEquals(2, $result['days_count']);
-        $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-
-        $daysArray = $result['days']->toArray(new Request());
-        $this->assertCount(2, $daysArray);
+        $this->assertArrayHasKey('days', $result);
+        $this->assertIsArray($result['days']);
+        $this->assertCount(2, $result['days']);
     }
 
     /** @test */
@@ -295,10 +291,8 @@ class EntityResourceTest extends TestCase
 
         // 関連データも正しく含まれていることを確認
         $this->assertArrayHasKey('days', $result);
-        $this->assertInstanceOf(\Illuminate\Http\Resources\Json\AnonymousResourceCollection::class, $result['days']);
-
-        $daysArray = $result['days']->toArray(new Request());
-        $this->assertCount(1, $daysArray);
+        $this->assertIsArray($result['days']);
+        $this->assertCount(1, $result['days']);
     }
 
     /** @test */

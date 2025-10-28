@@ -23,9 +23,10 @@ class EntityResource extends JsonResource
             'desc' => $this->desc,
             'status' => $this->status,
             'days_count' => $this->whenCounted('days'),
-            'days' => $this->relationLoaded('days')
-                ? DayResource::collection($this->days)->resolve()
-                : [],
+            'days' => $this->when(
+                $this->relationLoaded('days'),
+                fn () => DayResource::collection($this->days)->resolve()
+            ),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
