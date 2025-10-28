@@ -9,7 +9,7 @@ import TextInput from '@/Components/TextInput';
 export default function CreatePasswordForm({ className = '' }: { className?: string }) {
     const passwordInput = useRef<HTMLInputElement>(null);
 
-    const { data, setData, errors, put, reset, processing, recentlySuccessful } = useForm({
+    const { data, setData, errors, post, reset, processing, recentlySuccessful } = useForm({
         password: '',
         password_confirmation: '',
     });
@@ -17,7 +17,7 @@ export default function CreatePasswordForm({ className = '' }: { className?: str
     const createPassword: FormEventHandler = (e) => {
         e.preventDefault();
 
-        put(route('password.storeUpdate'), {
+        post(route('password.storeUpdate'), {
             preserveScroll: true,
             onSuccess: () => reset(),
             onError: (errors) => {
