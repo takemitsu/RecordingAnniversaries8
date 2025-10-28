@@ -143,7 +143,7 @@
 **以下の条件を満たす場合に推奨**:
 1. ✅ 開発期間として1-2週間を確保できる
 2. ✅ 実デバイス（Mac/iPhone等）でテストできる
-3. ✅ HTTPS環境を準備できる（Valet/Herd推奨）
+3. ✅ HTTPS環境を準備できる（Sail + mkcert推奨）
 4. ✅ ユーザーサポート体制を整えられる
 5. ✅ 段階的ロールアウトが可能
 
@@ -267,9 +267,9 @@ createInertiaApp({
 ### 開発ツール
 
 **必須**:
-- **HTTPS環境**: Laravel Valet または Laravel Herd
+- **HTTPS環境**: Laravel Sail + mkcert
   - WebAuthnはHTTPSでのみ動作（localhostは除く）
-  - Valet/Herdはmkcertで自動的にHTTPS環境を構築
+  - Sail + mkcertで自己署名証明書を使用したHTTPS環境を構築
 
 **推奨**:
 - **Chrome DevTools**: WebAuthnエミュレーター（デバッグ用）
@@ -283,6 +283,26 @@ createInertiaApp({
 
 ## 実装ステップ
 
+### 事前準備: Sailエイリアスの設定（推奨）
+
+毎回 `./vendor/bin/sail` と入力するのは長いため、エイリアスを設定することを推奨します。
+
+```bash
+# ~/.bashrc または ~/.zshrc に追加
+alias sail='./vendor/bin/sail'
+
+# 反映
+source ~/.bashrc  # または source ~/.zshrc
+```
+
+以降のコマンド例では `./vendor/bin/sail` と記載していますが、エイリアスを設定した場合は `sail` で置き換え可能です。
+
+例:
+- `./vendor/bin/sail artisan migrate` → `sail artisan migrate`
+- `./vendor/bin/sail npm install` → `sail npm install`
+
+---
+
 ### フェーズ1: 基盤構築（0.5日）
 
 **目標**: 開発環境でパスキー認証の基盤を構築
@@ -291,22 +311,22 @@ createInertiaApp({
 
 1. **パッケージインストール**:
    ```bash
-   # バックエンド
-   composer require laragear/webauthn:^2.0
+   # バックエンド（Sail環境）
+   ./vendor/bin/sail composer require laragear/webauthn:^2.0
 
-   # フロントエンド
-   npm install @simplewebauthn/browser sonner
+   # フロントエンド（Sail環境）
+   ./vendor/bin/sail npm install @simplewebauthn/browser sonner
    ```
 
 2. **設定ファイルとマイグレーションの公開**:
    ```bash
-   php artisan vendor:publish --tag=webauthn-config
-   php artisan vendor:publish --tag=webauthn-migrations
+   ./vendor/bin/sail artisan vendor:publish --tag=webauthn-config
+   ./vendor/bin/sail artisan vendor:publish --tag=webauthn-migrations
    ```
 
 3. **マイグレーション実行**:
    ```bash
-   php artisan migrate
+   ./vendor/bin/sail artisan migrate
    ```
 
 4. **Userモデルに trait 追加**:
@@ -346,7 +366,7 @@ createInertiaApp({
 
 1. **WebAuthnController 作成**:
    ```bash
-   php artisan make:controller Auth/WebAuthnController
+   ./vendor/bin/sail artisan make:controller Auth/WebAuthnController
    ```
 
 2. **登録用エンドポイント実装**:
@@ -755,7 +775,7 @@ createInertiaApp({
 
 2. **テスト実行**:
    ```bash
-   php artisan test --filter=WebAuthn
+   ./vendor/bin/sail artisan test --filter=WebAuthn
    ```
 
 3. **実機テストマトリックス**:
@@ -1038,14 +1058,37 @@ public function deletePassword(Request $request)
 **課題**: WebAuthnはHTTPSでのみ動作（localhostを除く）
 
 **対策**:
-1. **開発環境**:
+1. **開発環境（Sail）**:
    ```bash
-   # Laravel Valet（推奨）
-   valet secure recordinganniversaries8
+   # Option 1: mkcert + Sail（推奨）
+   # mkcertのインストール
+   brew install mkcert
+   mkcert -install
 
-   # または Laravel Herd（推奨）
-   # Herdは自動的にHTTPSを設定
+   # 自己署名証明書の生成
+   cd ~/path/to/recordingAnniversaries8
+   mkdir -p .docker/ssl
+   mkcert -cert-file .docker/ssl/cert.pem -key-file .docker/ssl/key.pem localhost 127.0.0.1 ::1
+
+   # docker-compose.ymlに以下を追加:
+   # services:
+   #   laravel.test:
+   #     volumes:
+   #       - './.docker/ssl:/etc/ssl/private'
+   #     environment:
+   #       - SSL_CERT=/etc/ssl/private/cert.pem
+   #       - SSL_KEY=/etc/ssl/private/key.pem
+   #     ports:
+   #       - '${APP_PORT:-80}:80'
+   #       - '${APP_SSL_PORT:-443}:443'
+
+   # Sail起動
+   ./vendor/bin/sail up -d
+
+   # https://localhost でアクセス可能
    ```
+
+   **注意**: localhostでのテストは可能ですが、本格的なテストには実際のドメインが必要な場合があります。
 
 2. **ステージング環境**:
    - Let's EncryptでSSL証明書を取得
@@ -1137,8 +1180,8 @@ public function deletePassword(Request $request)
 
 ```bash
 # Form Request の作成
-php artisan make:request WebAuthn/RegisterCredentialRequest
-php artisan make:request WebAuthn/AuthenticateRequest
+./vendor/bin/sail artisan make:request WebAuthn/RegisterCredentialRequest
+./vendor/bin/sail artisan make:request WebAuthn/AuthenticateRequest
 ```
 
 **実装例**:
@@ -2217,21 +2260,21 @@ class ProcessMetricsAfterWebAuthnActivity implements ShouldQueue
 **Queueワーカーの起動**:
 ```bash
 # 開発環境
-php artisan queue:work
+./vendor/bin/sail artisan queue:work
 
 # 本番環境（Supervisor設定）
-php artisan queue:work --queue=default,metrics --tries=3 --timeout=120
+./vendor/bin/sail artisan queue:work --queue=default,metrics --tries=3 --timeout=120
 
 # 失敗したジョブの再試行
-php artisan queue:retry all
+./vendor/bin/sail artisan queue:retry all
 ```
 
 **Horizon（オプション）**:
 ```bash
 # Horizonを使用する場合
-composer require laravel/horizon
-php artisan horizon:install
-php artisan horizon
+./vendor/bin/sail composer require laravel/horizon
+./vendor/bin/sail artisan horizon:install
+./vendor/bin/sail artisan horizon
 ```
 
 ### 10. Laravel 11 標準のルート登録
@@ -4333,6 +4376,16 @@ Phase 4: 最適化と普及（継続的）
     - ダークモード対応
   - **評価: 65点 → 95点に改善**
   - **プロダクション品質として実用可能なレベルに到達**
+- 2025-10-28: **Sail環境対応版**
+  - すべてのコマンドをSail環境に対応
+    - `php artisan` → `./vendor/bin/sail artisan`
+    - `composer require` → `./vendor/bin/sail composer require`
+    - `npm install` → `./vendor/bin/sail npm install`
+  - HTTPS環境のセットアップをValet/HerdからSail + mkcertに変更
+  - docker-compose.ymlへのSSL設定追加方法を記載
+  - Sailの起動・停止方法を追加
+  - 開発環境要件をSail環境に統一
+  - **このプロジェクトで実際に使用できる実用的なドキュメントに改善**
 
 ---
 
@@ -4342,21 +4395,27 @@ Phase 4: 最適化と普及（継続的）
 
 1. **開発環境の準備**:
    ```bash
-   # HTTPS環境のセットアップ
-   valet secure recordinganniversaries8
-   # または Herd を使用
+   # Sail環境の起動
+   ./vendor/bin/sail up -d
+
+   # HTTPS環境のセットアップ（mkcert + Sail）
+   brew install mkcert
+   mkcert -install
+   mkdir -p .docker/ssl
+   mkcert -cert-file .docker/ssl/cert.pem -key-file .docker/ssl/key.pem localhost 127.0.0.1 ::1
+   # docker-compose.ymlにSSL設定を追加（上記セクション参照）
    ```
 
 2. **フェーズ1の開始**:
    ```bash
-   # パッケージインストール
-   composer require laragear/webauthn:^2.0
-   npm install @simplewebauthn/browser sonner
+   # パッケージインストール（Sail環境）
+   ./vendor/bin/sail composer require laragear/webauthn:^2.0
+   ./vendor/bin/sail npm install @simplewebauthn/browser sonner
 
    # セットアップ
-   php artisan vendor:publish --tag=webauthn-config
-   php artisan vendor:publish --tag=webauthn-migrations
-   php artisan migrate
+   ./vendor/bin/sail artisan vendor:publish --tag=webauthn-config
+   ./vendor/bin/sail artisan vendor:publish --tag=webauthn-migrations
+   ./vendor/bin/sail artisan migrate
    ```
 
 3. **Userモデルの更新**:

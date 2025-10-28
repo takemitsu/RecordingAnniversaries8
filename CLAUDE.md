@@ -26,63 +26,115 @@ The application follows a three-tier data model:
 
 Both `Entity` and `Day` models use soft deletes for data preservation.
 
+## Development Environment (Laravel Sail)
+
+このプロジェクトは **Laravel Sail** を使用したDocker開発環境で動作します。
+
+### Sail の起動と停止
+```bash
+# 開発環境の起動
+./vendor/bin/sail up -d
+
+# 開発環境の停止
+./vendor/bin/sail down
+
+# Sailのエイリアスを設定（推奨）
+alias sail='./vendor/bin/sail'
+source ~/.bashrc  # または source ~/.zshrc
+
+# エイリアス設定後は短縮形で使用可能
+sail up -d
+sail down
+```
+
+### Sail コマンドの基本
+- すべての `php artisan` コマンドは `./vendor/bin/sail artisan` として実行
+- すべての `composer` コマンドは `./vendor/bin/sail composer` として実行
+- すべての `npm` コマンドは `./vendor/bin/sail npm` として実行
+
 ## Common Development Commands
 
 ### Backend (Laravel/PHP)
 ```bash
-# 開発サーバー起動
-php artisan serve
+# Sail 環境が起動していることを確認
+./vendor/bin/sail up -d
 
 # マイグレーション実行
-php artisan migrate
+./vendor/bin/sail artisan migrate
 
 # データベースシード実行
-php artisan db:seed
+./vendor/bin/sail artisan db:seed
 
 # テスト実行
-./vendor/bin/phpunit
-# または: php artisan test
+./vendor/bin/sail artisan test
+# または: ./vendor/bin/sail test
 
 # Laravel Pint でコード整形
-./vendor/bin/pint
+./vendor/bin/sail pint
 
 # アプリケーションキャッシュクリア
-php artisan cache:clear
-php artisan config:clear
-php artisan view:clear
+./vendor/bin/sail artisan cache:clear
+./vendor/bin/sail artisan config:clear
+./vendor/bin/sail artisan view:clear
 ```
 
 ### Frontend (React/TypeScript)
 ```bash
 # Vite 開発サーバー起動
-npm run dev
+./vendor/bin/sail npm run dev
 
 # プロダクション用ビルド（TypeScript コンパイルと SSR を含む）
-npm run build
+./vendor/bin/sail npm run build
 
 # TypeScript 型チェック
-npx tsc --noEmit
+./vendor/bin/sail npx tsc --noEmit
 ```
 
 ### 開発環境セットアップ
 ```bash
-# PHP 依存関係インストール
-composer install
+# Sail 環境の起動（初回は自動的に依存関係もインストール）
+./vendor/bin/sail up -d
+
+# PHP 依存関係インストール（必要に応じて）
+./vendor/bin/sail composer install
 
 # Node 依存関係インストール
-npm install
+./vendor/bin/sail npm install
 
 # 環境ファイル設定
 cp .env.example .env
-php artisan key:generate
+./vendor/bin/sail artisan key:generate
 
 # マイグレーションとシードデータ実行
-php artisan migrate --seed
+./vendor/bin/sail artisan migrate --seed
 
-# Laravel と Vite サーバーを起動（別々のターミナルで実行）
-php artisan serve
-npm run dev
+# Vite サーバーを起動（別ターミナルで実行）
+./vendor/bin/sail npm run dev
+
+# Note: Sail 環境自体がLaravelサーバーを含んでいるため、
+# php artisan serve は不要です。http://localhost にアクセスできます。
 ```
+
+### コミット前のコード品質チェック
+
+**コミット前に必ず以下を実行してください：**
+
+```bash
+# PHP コードの静的解析（Larastan/PHPStan）
+./vendor/bin/sail composer pstan
+# または: ./vendor/bin/sail bin phpstan analyse
+
+# PHP コードフォーマット（Laravel Pint）
+./vendor/bin/sail pint
+
+# フロントエンド コードフォーマット・リント（Biome）
+./vendor/bin/sail npx biome check --write
+```
+
+これらのツールを実行することで：
+- **PHPStan/Larastan**: 型エラーや潜在的なバグを検出
+- **Laravel Pint**: PHPコードスタイルを統一
+- **Biome**: TypeScript/React コードのフォーマットとリントを統一
 
 ## Application Architecture
 
