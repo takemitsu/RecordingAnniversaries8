@@ -23,7 +23,7 @@ class EntitiesController extends Controller
         $entities = $this->entityService->getEntitiesForPickup();
 
         return Inertia::render('Dashboard', [
-            'entities' => EntityResource::collection($entities),
+            'entities' => EntityResource::collection($entities)->resolve(),
         ]);
     }
 
@@ -32,7 +32,7 @@ class EntitiesController extends Controller
         $entities = $this->entityService->getAllForUser();
 
         return Inertia::render('Entities', [
-            'entities' => EntityResource::collection($entities),
+            'entities' => EntityResource::collection($entities)->resolve(),
         ]);
     }
 
