@@ -18,7 +18,7 @@ export default function Login({ status, canResetPassword }: { status?: string; c
         return () => {
             reset('password');
         };
-    }, []);
+    }, [reset]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
