@@ -26,18 +26,18 @@ class EntityService
     /**
      * エンティティの記念日を差分日数でソート
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $entities
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @param  \Illuminate\Database\Eloquent\Collection<int, Entity>  $entities
+     * @return \Illuminate\Database\Eloquent\Collection<int, Entity>
      */
     private function sortDaysByDiffDays($entities)
     {
-        return $entities->map(function ($entity) {
+        return $entities->map(function (Entity $entity) {
             if ($entity->days->isEmpty()) {
                 return null;
             }
 
             // 記念日を diff_days でソート
-            $entity->days = $entity->days->sortBy('diff_days')->values();
+            $entity->setRelation('days', $entity->days->sortBy('diff_days')->values());
 
             return $entity;
         })->filter(); // null を除去

@@ -12,9 +12,9 @@ class Day extends Model
     use HasFactory;
     use SoftDeletes;
 
-    public function entity()
+    public function entity(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo('App\Models\Entity');
+        return $this->belongsTo(Entity::class);
     }
 
     protected $appends = ['diff_days'];
