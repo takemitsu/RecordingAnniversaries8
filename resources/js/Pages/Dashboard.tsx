@@ -1,24 +1,23 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link} from '@inertiajs/react';
-import {Entity} from '@/types';
+import { Head, Link } from '@inertiajs/react';
 import EntityCard from '@/Components/EntityCard';
-import {useAuthUser} from '@/hooks/useAuthUser';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import type { Entity } from '@/types';
 
-export default function Dashboard({entities}: { entities: Entity[] }) {
+export default function Dashboard({ entities }: { entities: Entity[] }) {
     const user = useAuthUser();
     return (
-        <AuthenticatedLayout
-            user={user}
-        >
-            <Head title="一覧"/>
+        <AuthenticatedLayout user={user}>
+            <Head title="一覧" />
 
             <div className="lg:p-12 p-2">
                 {entities.map((entity: Entity) => (
-                    <EntityCard key={'E' + entity.id} entity={entity} />
+                    <EntityCard key={`E${entity.id}`} entity={entity} />
                 ))}
                 {entities.length === 0 && (
                     <div className="m-4 p-2 bg-gray-800 text-gray-200 rounded text-center">
-                        データがありません。<br/>
+                        データがありません。
+                        <br />
                         <Link
                             href={route('entities.index')}
                             method="get"

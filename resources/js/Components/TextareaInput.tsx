@@ -1,8 +1,8 @@
-import { TextareaHTMLAttributes, forwardRef } from 'react';
+import { forwardRef, type TextareaHTMLAttributes } from 'react';
 
 export default forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(function TextareaInput(
     { className = '', ...props },
-    ref
+    ref,
 ) {
     return (
         <textarea

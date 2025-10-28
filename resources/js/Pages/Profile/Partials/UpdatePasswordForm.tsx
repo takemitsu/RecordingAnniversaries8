@@ -1,10 +1,10 @@
-import { useRef, FormEventHandler } from 'react';
+import { useForm } from '@inertiajs/react';
+import { type FormEventHandler, useRef } from 'react';
+import FormSuccessMessage from '@/Components/FormSuccessMessage';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import FormSuccessMessage from '@/Components/FormSuccessMessage';
-import { useForm } from '@inertiajs/react';
 
 export default function UpdatePasswordForm({ className = '' }: { className?: string }) {
     const passwordInput = useRef<HTMLInputElement>(null);

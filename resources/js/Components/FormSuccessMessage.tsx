@@ -5,7 +5,7 @@ interface FormSuccessMessageProps {
     message?: string;
 }
 
-export default function FormSuccessMessage({ show, message = "保存しました。" }: FormSuccessMessageProps) {
+export default function FormSuccessMessage({ show, message = '保存しました。' }: FormSuccessMessageProps) {
     return (
         <Transition
             show={show}

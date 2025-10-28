@@ -1,5 +1,5 @@
-import { Day } from '@/types';
-import { japanDate, getAges } from '@/util/japanDate';
+import type { Day } from '@/types';
+import { getAges, japanDate } from '@/util/japanDate';
 
 interface AnniversaryDayCardProps {
     day: Day;
@@ -20,14 +20,8 @@ export default function AnniversaryDayCard({ day, children }: AnniversaryDayCard
                 <span>（{japanDate(day.anniv_at, true)}）</span>
                 <span>{getAges(day.anniv_at)}</span>
             </div>
-            <div className="text-gray-400 dark:text-gray-400 whitespace-pre-line">
-                {day.desc}
-            </div>
-            {children && (
-                <div className="flex justify-end mb-2">
-                    {children}
-                </div>
-            )}
+            <div className="text-gray-400 dark:text-gray-400 whitespace-pre-line">{day.desc}</div>
+            {children && <div className="flex justify-end mb-2">{children}</div>}
         </div>
     );
 }

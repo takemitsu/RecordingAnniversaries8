@@ -8,10 +8,7 @@ interface BackLinkProps {
 
 export default function BackLink({ href, children }: BackLinkProps) {
     return (
-        <Link
-            href={href}
-            className={BUTTON_CLASSES.link}
-        >
+        <Link href={href} className={BUTTON_CLASSES.link}>
             {children}
         </Link>
     );

@@ -1,13 +1,21 @@
+import { Link, useForm } from '@inertiajs/react';
+import type { FormEventHandler } from 'react';
+import FormSuccessMessage from '@/Components/FormSuccessMessage';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import FormSuccessMessage from '@/Components/FormSuccessMessage';
-import { Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
-export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }: { mustVerifyEmail: boolean, status?: string, className?: string }) {
+export default function UpdateProfileInformation({
+    mustVerifyEmail,
+    status,
+    className = '',
+}: {
+    mustVerifyEmail: boolean;
+    status?: string;
+    className?: string;
+}) {
     const user = useAuthUser();
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({

@@ -1,9 +1,9 @@
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
-import TextareaInput from '@/Components/TextareaInput';
+import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import TextareaInput from '@/Components/TextareaInput';
+import TextInput from '@/Components/TextInput';
 import { INPUT_CLASSES } from '@/constants/styles';
-import { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 interface BaseFormFieldProps {
     id: string;
@@ -24,18 +24,18 @@ interface TextareaFieldProps extends BaseFormFieldProps {
 
 type FormFieldProps = TextInputFieldProps | TextareaFieldProps;
 
-export default function FormField({ 
-    id, 
-    label, 
-    error, 
-    type = 'text', 
+export default function FormField({
+    id,
+    label,
+    error,
+    type = 'text',
     inputProps = {},
-    className = '' 
+    className = '',
 }: FormFieldProps) {
     return (
         <div className={className}>
             <InputLabel htmlFor={id} value={label} />
-            
+
             {type === 'textarea' ? (
                 <TextareaInput
                     id={id}
@@ -49,7 +49,7 @@ export default function FormField({
                     {...(inputProps as InputHTMLAttributes<HTMLInputElement>)}
                 />
             )}
-            
+
             <InputError className="mt-2" message={error} />
         </div>
     );

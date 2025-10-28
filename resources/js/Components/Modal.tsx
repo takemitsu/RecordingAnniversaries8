@@ -1,5 +1,5 @@
-import { PropsWithChildren } from 'react';
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
+import type { PropsWithChildren } from 'react';
 
 export default function Modal({
     children,
