@@ -16,7 +16,8 @@ export default function RegisterPasskey() {
             const { data: options } = await axios.post('/webauthn/register/options');
 
             // ブラウザのWebAuthn APIを呼び出し
-            const credential = await startRegistration(options);
+            // @simplewebauthn/browser v11以降は { optionsJSON } 形式で渡す
+            const credential = await startRegistration({ optionsJSON: options });
 
             // サーバーに登録
             await axios.post('/webauthn/register', credential);
