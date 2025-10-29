@@ -39,20 +39,15 @@ export default function Edit({
                     </div>
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                        <div className="space-y-6">
-                            {hasPassword ? (
-                                <UpdatePasswordForm className="max-w-xl" />
-                            ) : (
-                                <CreatePasswordForm className="max-w-xl" />
-                            )}
-
-                            {hasPassword && (
-                                <>
-                                    <hr className="border-gray-200 dark:border-gray-700" />
-                                    <DeletePasswordForm className="max-w-xl" />
-                                </>
-                            )}
-                        </div>
+                        {hasPassword ? (
+                            <div className="space-y-6 max-w-xl">
+                                <UpdatePasswordForm />
+                                <hr className="border-gray-200 dark:border-gray-700" />
+                                <DeletePasswordForm />
+                            </div>
+                        ) : (
+                            <CreatePasswordForm className="max-w-xl" />
+                        )}
                     </div>
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
