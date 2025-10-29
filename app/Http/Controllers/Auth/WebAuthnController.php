@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterWebAuthnRequest;
 use App\Http\Resources\WebAuthnCredentialResource;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Log;
 use Laragear\WebAuthn\Http\Requests\AssertedRequest;
 use Laragear\WebAuthn\Http\Requests\AssertionRequest;
 use Laragear\WebAuthn\Http\Requests\AttestedRequest;
@@ -28,11 +30,23 @@ class WebAuthnController extends Controller
      */
     public function register(AttestedRequest $request): JsonResponse
     {
-        $request->save();
+        try {
+            $request->save();
 
-        return response()->json([
-            'message' => 'パスキーが登録されました',
-        ]);
+            return response()->json([
+                'message' => 'パスキーが登録されました',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('パスキー登録エラー', [
+                'user_id' => $request->user()?->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'パスキーの登録に失敗しました。もう一度お試しください。',
+            ], 500);
+        }
     }
 
     /**
@@ -48,20 +62,31 @@ class WebAuthnController extends Controller
      */
     public function login(AssertedRequest $request): JsonResponse
     {
-        $user = $request->login();
+        try {
+            $user = $request->login();
 
-        if (! $user) {
+            if (! $user) {
+                return response()->json([
+                    'message' => '認証に失敗しました',
+                ], 401);
+            }
+
+            // セッション固定攻撃を防ぐためセッションを再生成
+            $request->session()->regenerate();
+
             return response()->json([
-                'message' => '認証に失敗しました',
-            ], 401);
+                'message' => 'ログインしました',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('パスキーログインエラー', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'ログインに失敗しました。もう一度お試しください。',
+            ], 500);
         }
-
-        // セッション固定攻撃を防ぐためセッションを再生成
-        $request->session()->regenerate();
-
-        return response()->json([
-            'message' => 'ログインしました',
-        ]);
     }
 
     /**
@@ -82,30 +107,48 @@ class WebAuthnController extends Controller
      */
     public function destroy(Request $request, string $id): JsonResponse
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        $credential = $user->webAuthnCredentials()
-            ->findOrFail($id);
+            $credential = $user->webAuthnCredentials()
+                ->findOrFail($id);
 
-        // 最後のパスキーかどうかをチェック
-        $remainingCredentialsCount = $user->webAuthnCredentials()->count();
+            // 最後のパスキーかどうかをチェック
+            $remainingCredentialsCount = $user->webAuthnCredentials()->count();
 
-        if ($remainingCredentialsCount === 1) {
-            // バックアップ認証方法があるかチェック
-            $hasPassword = ! is_null($user->password);
-            $hasGoogleOAuth = ! is_null($user->google_id);
+            if ($remainingCredentialsCount === 1) {
+                // バックアップ認証方法があるかチェック
+                $hasPassword = ! is_null($user->password);
+                $hasGoogleOAuth = ! is_null($user->google_id);
 
-            if (! $hasPassword && ! $hasGoogleOAuth) {
-                return response()->json([
-                    'message' => '最後のパスキーは削除できません。他の認証方法を設定してください。',
-                ], 403);
+                if (! $hasPassword && ! $hasGoogleOAuth) {
+                    return response()->json([
+                        'message' => '最後のパスキーは削除できません。他の認証方法を設定してください。',
+                    ], 403);
+                }
             }
+
+            $credential->delete();
+
+            return response()->json([
+                'message' => 'パスキーを削除しました',
+            ]);
+        } catch (ModelNotFoundException $e) {
+            // ModelNotFoundExceptionは404エラーとして返す
+            return response()->json([
+                'message' => 'パスキーが見つかりません',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('パスキー削除エラー', [
+                'user_id' => $request->user()?->id,
+                'credential_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'パスキーの削除に失敗しました。もう一度お試しください。',
+            ], 500);
         }
-
-        $credential->delete();
-
-        return response()->json([
-            'message' => 'パスキーを削除しました',
-        ]);
     }
 }
