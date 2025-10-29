@@ -3,7 +3,7 @@ import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { createRoot, hydrateRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { Toaster } from 'sonner';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -19,12 +19,7 @@ createInertiaApp({
             </>
         );
 
-        if (import.meta.env.DEV) {
-            createRoot(el).render(<AppWithToaster />);
-            return;
-        }
-
-        hydrateRoot(el, <AppWithToaster />);
+        createRoot(el).render(<AppWithToaster />);
     },
     progress: {
         color: '#4B5563',
