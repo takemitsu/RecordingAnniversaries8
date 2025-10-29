@@ -6,13 +6,10 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\WebAuthnAuthentication;
 
-/**
- * @method mixed makeWebAuthnRegister()
- * @method void confirmWebAuthnRegister(\Illuminate\Http\Request $request)
- */
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, WebAuthnAuthenticatable
 {
     use HasFactory, Notifiable, WebAuthnAuthentication;
 

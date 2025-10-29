@@ -3,27 +3,27 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterWebAuthnRequest;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Laragear\WebAuthn\Http\Requests\AttestedRequest;
 
 class WebAuthnController extends Controller
 {
     /**
      * パスキー登録用のオプションを生成
      */
-    public function registerOptions(Request $request): JsonResponse
+    public function registerOptions(RegisterWebAuthnRequest $request): Responsable
     {
-        return response()->json(
-            $request->user()->makeWebAuthnRegister()
-        );
+        return $request->toCreate();
     }
 
     /**
      * パスキーを登録
      */
-    public function register(Request $request): JsonResponse
+    public function register(AttestedRequest $request): JsonResponse
     {
-        $request->user()->confirmWebAuthnRegister($request);
+        $request->save();
 
         return response()->json([
             'message' => 'パスキーが登録されました',
