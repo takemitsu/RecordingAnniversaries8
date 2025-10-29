@@ -53,6 +53,9 @@ class WebAuthnController extends Controller
             ], 401);
         }
 
+        // セッション固定攻撃を防ぐためセッションを再生成
+        $request->session()->regenerate();
+
         return response()->json([
             'message' => 'ログインしました',
         ]);

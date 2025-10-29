@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import { startAuthentication } from '@simplewebauthn/browser';
 import axios from 'axios';
 import { useState } from 'react';
@@ -22,9 +23,8 @@ export default function LoginWithPasskey() {
             // サーバーで認証
             await axios.post('/webauthn/login', credential);
 
-            // ログイン成功後、フルページリロードでダッシュボードに遷移
-            // （セッションクッキーを確実に使用するため）
-            window.location.href = route('dashboard');
+            // 認証成功後、Inertia.jsのrouterでダッシュボードに遷移
+            router.visit(route('dashboard'));
         } catch (error) {
             console.error('パスキー認証エラー:', error);
             const message = getWebAuthnErrorMessage(error as Error);
