@@ -29,7 +29,14 @@ export default function PasskeyItem({ passkey, onDelete }: PasskeyItemProps) {
             onDelete();
         } catch (error) {
             console.error('パスキー削除エラー:', error);
-            toast.error('パスキーの削除に失敗しました');
+
+            // 403エラーの場合は、バックエンドから返されたメッセージを表示
+            if (axios.isAxiosError(error) && error.response?.status === 403) {
+                const message = error.response?.data?.message || '最後のパスキーは削除できません。他の認証方法を設定してください。';
+                toast.error(message);
+            } else {
+                toast.error('パスキーの削除に失敗しました');
+            }
         } finally {
             setDeleting(false);
         }

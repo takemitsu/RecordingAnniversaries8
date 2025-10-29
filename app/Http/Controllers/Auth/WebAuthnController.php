@@ -82,9 +82,25 @@ class WebAuthnController extends Controller
      */
     public function destroy(Request $request, string $id): JsonResponse
     {
-        $credential = $request->user()
-            ->webAuthnCredentials()
+        $user = $request->user();
+
+        $credential = $user->webAuthnCredentials()
             ->findOrFail($id);
+
+        // 最後のパスキーかどうかをチェック
+        $remainingCredentialsCount = $user->webAuthnCredentials()->count();
+
+        if ($remainingCredentialsCount === 1) {
+            // バックアップ認証方法があるかチェック
+            $hasPassword = ! is_null($user->password);
+            $hasGoogleOAuth = ! is_null($user->google_id);
+
+            if (! $hasPassword && ! $hasGoogleOAuth) {
+                return response()->json([
+                    'message' => '最後のパスキーは削除できません。他の認証方法を設定してください。',
+                ], 403);
+            }
+        }
 
         $credential->delete();
 
