@@ -39,11 +39,20 @@ export default function Edit({
                     </div>
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                        {hasPassword ? (
-                            <UpdatePasswordForm className="max-w-xl" />
-                        ) : (
-                            <CreatePasswordForm className="max-w-xl" />
-                        )}
+                        <div className="space-y-6">
+                            {hasPassword ? (
+                                <UpdatePasswordForm className="max-w-xl" />
+                            ) : (
+                                <CreatePasswordForm className="max-w-xl" />
+                            )}
+
+                            {hasPassword && (
+                                <>
+                                    <hr className="border-gray-200 dark:border-gray-700" />
+                                    <DeletePasswordForm className="max-w-xl" />
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
@@ -53,12 +62,6 @@ export default function Edit({
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <RegisterPasskeyForm className="max-w-xl" />
                     </div>
-
-                    {hasPassword && (
-                        <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                            <DeletePasswordForm className="max-w-xl" />
-                        </div>
-                    )}
 
                     {!user.google_id && (
                         <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
