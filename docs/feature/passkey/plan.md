@@ -196,18 +196,18 @@
 
 **主要パッケージ**:
 ```bash
-composer require laragear/webauthn:^2.0
+composer require laragear/webauthn:^4.0
 ```
 
 **パッケージ情報**:
 - **名前**: Laragear/WebAuthn
-- **バージョン**: ^2.0（Laravel 11対応）
+- **バージョン**: ^4.0（Laravel 11/12対応）
 - **GitHub**: https://github.com/Laragear/WebAuthn
 - **メンテナンス状況**: アクティブ（2025年現在）
 - **特徴**:
-  - Laravel 11完全対応
+  - Laravel 11/12完全対応
   - Eloquent統合が簡単
-  - ミドルウェアとForm Requestが付属
+  - AttestationRequest/AttestedRequestなどのForm Requestが付属
   - 日本語ドキュメントあり
 
 ### フロントエンド（React/TypeScript）
@@ -219,13 +219,14 @@ npm install @simplewebauthn/browser
 
 **パッケージ情報**:
 - **名前**: @simplewebauthn/browser
-- **バージョン**: ^10.0.0
+- **バージョン**: ^13.0.0
 - **特徴**:
   - TypeScript完全サポート
   - React統合が容易
   - 最も人気のあるWebAuthnライブラリ
   - 優れたドキュメント
   - 型安全
+  - **v11以降**: 引数形式が変更（`startRegistration({ optionsJSON })`形式）
 
 **型定義**（オプション）:
 ```bash
@@ -341,14 +342,15 @@ source ~/.bashrc  # または source ~/.zshrc
    ./vendor/bin/sail artisan migrate
    ```
 
-4. **Userモデルに trait 追加**:
+4. **Userモデルに trait とインターフェイス追加**:
    ```php
    // app/Models/User.php
+   use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
    use Laragear\WebAuthn\WebAuthnAuthentication;
 
-   class User extends Authenticatable implements MustVerifyEmail
+   class User extends Authenticatable implements MustVerifyEmail, WebAuthnAuthenticatable
    {
-       use HasFactory, Notifiable, WebAuthnAuthentication; // 追加
+       use HasFactory, Notifiable, WebAuthnAuthentication;
    }
    ```
 
@@ -386,29 +388,54 @@ source ~/.bashrc  # または source ~/.zshrc
    // app/Http/Controllers/Auth/WebAuthnController.php
    namespace App\Http\Controllers\Auth;
 
-   use Illuminate\Http\Request;
    use App\Http\Controllers\Controller;
+   use App\Http\Requests\RegisterWebAuthnRequest;
+   use Illuminate\Contracts\Support\Responsable;
+   use Illuminate\Http\JsonResponse;
+   use Laragear\WebAuthn\Http\Requests\AttestedRequest;
 
    class WebAuthnController extends Controller
    {
        /**
         * パスキー登録用のオプションを生成
         */
-       public function registerOptions(Request $request)
+       public function registerOptions(RegisterWebAuthnRequest $request): Responsable
        {
-           return $request->user()->makeWebAuthnRegister();
+           return $request->toCreate();
        }
 
        /**
         * パスキーを登録
         */
-       public function register(Request $request)
+       public function register(AttestedRequest $request): JsonResponse
        {
-           $request->user()->confirmWebAuthnRegister($request);
+           $request->save();
 
            return response()->json([
                'message' => 'パスキーが登録されました',
            ]);
+       }
+   }
+   ```
+
+   **カスタムリクエストクラス**（認可処理用）:
+   ```php
+   // app/Http/Requests/RegisterWebAuthnRequest.php
+   namespace App\Http\Requests;
+
+   use Laragear\WebAuthn\Http\Requests\AttestationRequest;
+
+   class RegisterWebAuthnRequest extends AttestationRequest
+   {
+       /**
+        * Validate the class instance.
+        */
+       public function validateResolved(): void
+       {
+           // 認証済みユーザーがいるかチェック
+           if (! $this->user()) {
+               $this->failedAuthorization();
+           }
        }
    }
    ```
@@ -444,7 +471,8 @@ source ~/.bashrc  # または source ~/.zshrc
                const { data: options } = await axios.post('/webauthn/register/options');
 
                // ブラウザのWebAuthn APIを呼び出し
-               const credential = await startRegistration(options.publicKey);
+               // @simplewebauthn/browser v11以降は { optionsJSON } 形式で渡す
+               const credential = await startRegistration({ optionsJSON: options });
 
                // サーバーに登録
                await axios.post('/webauthn/register', credential);
