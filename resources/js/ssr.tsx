@@ -2,6 +2,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import createServer from '@inertiajs/react/server';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import ReactDOMServer from 'react-dom/server';
+import { Toaster } from 'sonner';
 import type { RouteName } from 'ziggy-js';
 import { route } from '../../vendor/tightenco/ziggy';
 
@@ -22,7 +23,12 @@ createServer((page) =>
                     location: new URL(page.props.ziggy.location),
                 });
 
-            return <App {...props} />;
+            return (
+                <>
+                    <App {...props} />
+                    <Toaster position="top-right" />
+                </>
+            );
         },
     })
 );
