@@ -292,7 +292,7 @@ WebAuthn APIの動作確認：
 
 - [x] Phase 1: Sail環境起動・HTTP接続確認完了
 - [x] Phase 2: パッケージインストール・マイグレーション完了
-- [ ] Phase 3: Passkey登録機能動作確認
+- [x] Phase 3: Passkey登録機能実装完了（動作確認は未実施）
 - [ ] Phase 4: Passkey認証機能動作確認
 - [ ] Phase 5: デバイス管理機能動作確認
 - [ ] Phase 6: テスト全件PASS
