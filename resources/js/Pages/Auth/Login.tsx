@@ -102,7 +102,7 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                 </div>
             </form>
 
-            <div className="mt-4">
+            <div className="mt-6 mb-2">
                 <LoginWithPasskey />
             </div>
         </GuestLayout>
