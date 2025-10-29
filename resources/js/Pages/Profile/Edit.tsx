@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CreatePasswordForm from '@/Pages/Profile/Partials/CreatePasswordForm';
+import DeletePasswordForm from '@/Pages/Profile/Partials/DeletePasswordForm';
 import RegisterPasskeyForm from '@/Pages/Profile/Partials/RegisterPasskeyForm';
 import UpdateGoogleAuth from '@/Pages/Profile/Partials/UpdateGoogleAuth';
 import type { PageProps } from '@/types';
@@ -12,9 +13,11 @@ export default function Edit({
     auth,
     mustVerifyEmail,
     status,
+    hasPassword,
 }: PageProps<{
     mustVerifyEmail: boolean;
     status?: string;
+    hasPassword: boolean;
 }>) {
     const user = usePage<PageProps>().props.auth.user;
 
@@ -36,10 +39,10 @@ export default function Edit({
                     </div>
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                        {user.google_id ? (
-                            <CreatePasswordForm className="max-w-xl" />
-                        ) : (
+                        {hasPassword ? (
                             <UpdatePasswordForm className="max-w-xl" />
+                        ) : (
+                            <CreatePasswordForm className="max-w-xl" />
                         )}
                     </div>
 
@@ -50,6 +53,12 @@ export default function Edit({
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <RegisterPasskeyForm className="max-w-xl" />
                     </div>
+
+                    {hasPassword && (
+                        <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                            <DeletePasswordForm className="max-w-xl" />
+                        </div>
+                    )}
 
                     {!user.google_id && (
                         <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
