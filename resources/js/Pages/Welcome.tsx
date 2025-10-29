@@ -1,30 +1,34 @@
-import {Link, Head} from '@inertiajs/react';
-import {PageProps} from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import type { PageProps } from '@/types';
 
-export default function Welcome({auth, laravelVersion, phpVersion}: PageProps<{
-    laravelVersion: string,
-    phpVersion: string
+export default function Welcome({
+    auth,
+    laravelVersion,
+    phpVersion,
+}: PageProps<{
+    laravelVersion: string;
+    phpVersion: string;
 }>) {
     return (
         <>
             <Head />
             <div className="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
-                <div
-                    className="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
+                <div className="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                         <main className="justify-center">
                             <div className="flex items-center justify-center gap-6">
-                                <div
-                                    className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
+                                <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
                                     ra
                                 </div>
 
                                 <div>
-                                    <h2 className="text-xl font-semibold text-black dark:text-white">Recording
-                                        Anniversary</h2>
+                                    <h2 className="text-xl font-semibold text-black dark:text-white">
+                                        Recording Anniversary
+                                    </h2>
 
                                     <p className="mt-2 text-sm/relaxed">
-                                        Would be cool to add a description of ‘Recording Anniversary’ here someday, but might not end up doing it.
+                                        Would be cool to add a description of ‘Recording Anniversary’ here someday, but
+                                        might not end up doing it.
                                     </p>
                                 </div>
                             </div>

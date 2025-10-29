@@ -1,15 +1,15 @@
-import { useRef, FormEventHandler } from 'react';
+import { Transition } from '@headlessui/react';
+import { useForm } from '@inertiajs/react';
+import { type FormEventHandler, useRef } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { useForm } from '@inertiajs/react';
-import { Transition } from '@headlessui/react';
 
 export default function CreatePasswordForm({ className = '' }: { className?: string }) {
     const passwordInput = useRef<HTMLInputElement>(null);
 
-    const { data, setData, errors, put, reset, processing, recentlySuccessful } = useForm({
+    const { data, setData, errors, post, reset, processing, recentlySuccessful } = useForm({
         password: '',
         password_confirmation: '',
     });
@@ -17,7 +17,7 @@ export default function CreatePasswordForm({ className = '' }: { className?: str
     const createPassword: FormEventHandler = (e) => {
         e.preventDefault();
 
-        put(route('password.storeUpdate'), {
+        post(route('password.storeUpdate'), {
             preserveScroll: true,
             onSuccess: () => reset(),
             onError: (errors) => {

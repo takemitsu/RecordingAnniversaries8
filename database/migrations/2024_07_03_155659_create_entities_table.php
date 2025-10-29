@@ -16,7 +16,7 @@ return new class extends Migration
             // ユーザ名ID
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             // 要素名(グループ名)
-            $table->string('name',255);
+            $table->string('name', 255);
             // 説明
             $table->text('desc')->nullable();
             // ステータス(listに出すか)
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
             // 論理削除
             $table->softDeletes();
-       });
+        });
     }
 
     /**

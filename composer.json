@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "inertiajs/inertia-laravel": "^1.0",
+        "laragear/webauthn": "^4.0",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.15",
@@ -15,6 +16,8 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^2.9",
+        "laravel/boost": "^1.0",
         "laravel/breeze": "^2.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
@@ -39,12 +42,8 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
+        "post-update-cmd": ["@php artisan vendor:publish --tag=laravel-assets --ansi --force"],
+        "post-root-package-install": ["@php -r \"file_exists('.env') || copy('.env.example', '.env');\""],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",

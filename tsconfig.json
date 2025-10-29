@@ -10,10 +10,12 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "noEmit": true,
+        "types": ["vitest/globals"],
         "paths": {
             "@/*": ["./resources/js/*"],
             "ziggy-js": ["./vendor/tightenco/ziggy"]
         }
     },
-    "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.d.ts"]
+    "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.d.ts"],
+    "exclude": ["resources/js/**/*.test.ts", "resources/js/test/**/*"]
 }

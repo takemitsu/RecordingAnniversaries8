@@ -1,10 +1,10 @@
-import { useEffect, FormEventHandler } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
+import { Head, useForm } from '@inertiajs/react';
+import { type FormEventHandler, useEffect } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, useForm } from '@inertiajs/react';
+import GuestLayout from '@/Layouts/GuestLayout';
 
 export default function ConfirmPassword() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -15,7 +15,7 @@ export default function ConfirmPassword() {
         return () => {
             reset('password');
         };
-    }, []);
+    }, [reset]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();

@@ -9,55 +9,75 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\WebAuthnController;
 use App\Http\Controllers\SocialiteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
-                ->name('register');
+        ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
-                ->name('login');
+        ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-//    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-//                ->name('password.request');
+    //    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+    //                ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-                ->name('password.email');
+        ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-                ->name('password.reset');
+        ->name('password.reset');
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
-                ->name('password.store');
+        ->name('password.store');
+
+    // WebAuthn (Passkey) Login Routes
+    Route::post('webauthn/login/options', [WebAuthnController::class, 'loginOptions'])
+        ->name('webauthn.login.options');
+    Route::post('webauthn/login', [WebAuthnController::class, 'login'])
+        ->name('webauthn.login');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
-                ->name('verification.notice');
+        ->name('verification.notice');
 
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-                ->middleware(['signed', 'throttle:6,1'])
-                ->name('verification.verify');
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
 
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-                ->middleware('throttle:6,1')
-                ->name('verification.send');
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
-                ->name('password.confirm');
+        ->name('password.confirm');
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
-    Route::put('password', [PasswordController::class, 'store'])->name('password.storeUpdate');
+    Route::post('password', [PasswordController::class, 'store'])->name('password.storeUpdate');
+    Route::delete('password', [PasswordController::class, 'destroy'])->name('password.destroy');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-                ->name('logout');
+        ->name('logout');
+
+    // WebAuthn (Passkey) Routes
+    Route::post('webauthn/register/options', [WebAuthnController::class, 'registerOptions'])
+        ->name('webauthn.register.options');
+    Route::post('webauthn/register', [WebAuthnController::class, 'register'])
+        ->name('webauthn.register');
+
+    // WebAuthn (Passkey) Management Routes
+    Route::get('webauthn/credentials', [WebAuthnController::class, 'index'])
+        ->name('webauthn.credentials.index');
+    Route::delete('webauthn/credentials/{id}', [WebAuthnController::class, 'destroy'])
+        ->name('webauthn.credentials.destroy');
 });
 
 Route::get('/auth/redirect/google', [SocialiteController::class, 'redirectGoogle'])->name('auth.redirect.google');

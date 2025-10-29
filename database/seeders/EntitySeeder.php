@@ -14,7 +14,7 @@ class EntitySeeder extends Seeder
     {
         $user = DB::table('users')->orderBy('id')->first();
 
-        foreach (range(1,4) as $index) {
+        foreach (range(1, 4) as $index) {
             DB::table('entities')->insert([
                 'user_id' => $user->id,
                 'name' => fake()->sentence(2),

@@ -1,14 +1,15 @@
-import {useEffect, FormEventHandler} from 'react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { type FormEventHandler, useEffect } from 'react';
 import Checkbox from '@/Components/Checkbox';
-import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import {Head, Link, useForm} from '@inertiajs/react';
+import LoginWithPasskey from '@/Components/WebAuthn/LoginWithPasskey';
+import GuestLayout from '@/Layouts/GuestLayout';
 
-export default function Login({status, canResetPassword}: { status?: string, canResetPassword: boolean }) {
-    const {data, setData, post, processing, errors, reset} = useForm({
+export default function Login({ status, canResetPassword }: { status?: string; canResetPassword: boolean }) {
+    const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
         remember: false,
@@ -28,17 +29,17 @@ export default function Login({status, canResetPassword}: { status?: string, can
 
     const redirectGoogle = () => {
         location.href = route('auth.redirect.google');
-    }
+    };
 
     return (
         <GuestLayout>
-            <Head title="Login"/>
+            <Head title="Login" />
 
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value="Email"/>
+                    <InputLabel htmlFor="email" value="Email" />
 
                     <TextInput
                         id="email"
@@ -51,11 +52,11 @@ export default function Login({status, canResetPassword}: { status?: string, can
                         onChange={(e) => setData('email', e.target.value)}
                     />
 
-                    <InputError message={errors.email} className="mt-2"/>
+                    <InputError message={errors.email} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password"/>
+                    <InputLabel htmlFor="password" value="Password" />
 
                     <TextInput
                         id="password"
@@ -67,7 +68,7 @@ export default function Login({status, canResetPassword}: { status?: string, can
                         onChange={(e) => setData('password', e.target.value)}
                     />
 
-                    <InputError message={errors.password} className="mt-2"/>
+                    <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div className="block mt-4">
@@ -91,15 +92,19 @@ export default function Login({status, canResetPassword}: { status?: string, can
                         </Link>
                     )}
 
-                    <a type="buttn" onClick={redirectGoogle}>
+                    <button type="button" onClick={redirectGoogle}>
                         <img src={'img/web_dark_rd_SI.svg'} alt="sign in with Google" />
-                    </a>
+                    </button>
 
                     <PrimaryButton className="ms-4" disabled={processing}>
                         Log in
                     </PrimaryButton>
                 </div>
             </form>
+
+            <div className="mt-6 mb-2">
+                <LoginWithPasskey />
+            </div>
         </GuestLayout>
     );
 }

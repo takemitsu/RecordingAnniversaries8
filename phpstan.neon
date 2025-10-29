@@ -1,0 +1,16 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - database/
+        - routes/
+
+    # Level 0 is the loosest and level 9 is the strictest.
+    level: 5
+
+    ignoreErrors:
+
+    excludePaths:
+        - routes/console.php

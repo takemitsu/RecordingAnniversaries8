@@ -1,15 +1,19 @@
-import {PropsWithChildren, ReactNode, useState} from 'react';
+import { Link } from '@inertiajs/react';
+import { type PropsWithChildren, type ReactNode, useState } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import {Link} from '@inertiajs/react';
-import {User} from '@/types';
-import {getTodayForHeader} from "@/util/japanDate";
+import type { User } from '@/types';
+import { getTodayForHeader } from '@/util/japanDate';
 
-export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
+export default function Authenticated({
+    user,
+    header,
+    children,
+}: PropsWithChildren<{ user: User; header?: ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const today = getTodayForHeader()
+    const today = getTodayForHeader();
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -19,8 +23,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <ApplicationLogo
-                                        className="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"/>
+                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                                 </Link>
                                 <div className="block ml-2 text-gray-600 dark:text-gray-400">{today}</div>
                             </div>
@@ -52,6 +55,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                                     viewBox="0 0 20 20"
                                                     fill="currentColor"
                                                 >
+                                                    <title>Dropdown</title>
                                                     <path
                                                         fillRule="evenodd"
                                                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -74,10 +78,12 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
                         <div className="-me-2 flex items-center sm:hidden">
                             <button
+                                type="button"
                                 onClick={() => setShowingNavigationDropdown((previousState) => !previousState)}
                                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out"
                             >
                                 <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                    <title>Menu</title>
                                     <path
                                         className={!showingNavigationDropdown ? 'inline-flex' : 'hidden'}
                                         strokeLinecap="round"
@@ -98,7 +104,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                     </div>
                 </div>
 
-                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
+                <div className={`${showingNavigationDropdown ? 'block' : 'hidden'} sm:hidden`}>
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
                             一覧
@@ -110,9 +116,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
                     <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
                         <div className="px-4">
-                            <div className="font-medium text-base text-gray-800 dark:text-gray-200">
-                                {user.name}
-                            </div>
+                            <div className="font-medium text-base text-gray-800 dark:text-gray-200">{user.name}</div>
                             <div className="font-medium text-sm text-gray-500">{user.email}</div>
                         </div>
 

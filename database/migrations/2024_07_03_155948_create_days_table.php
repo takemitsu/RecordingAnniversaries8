@@ -16,7 +16,7 @@ return new class extends Migration
             // 要素(グループ)ID
             $table->foreignId('entity_id')->constrained('entities')->cascadeOnDelete();
             // 名前
-            $table->string('name',255);
+            $table->string('name', 255);
             // 説明
             $table->text('desc')->nullable();
             // 日付
