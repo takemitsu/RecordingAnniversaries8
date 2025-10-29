@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CreatePasswordForm from '@/Pages/Profile/Partials/CreatePasswordForm';
+import RegisterPasskeyForm from '@/Pages/Profile/Partials/RegisterPasskeyForm';
 import UpdateGoogleAuth from '@/Pages/Profile/Partials/UpdateGoogleAuth';
 import type { PageProps } from '@/types';
 import DeleteUserForm from './Partials/DeleteUserForm';
@@ -44,6 +45,10 @@ export default function Edit({
 
                     <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                         <UpdateGoogleAuth className="max-w-xl" />
+                    </div>
+
+                    <div className="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                        <RegisterPasskeyForm className="max-w-xl" />
                     </div>
 
                     {!user.google_id && (
