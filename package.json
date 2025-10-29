@@ -38,8 +38,10 @@
         "vitest": "^3.2.4"
     },
     "dependencies": {
+        "@simplewebauthn/browser": "^13.2.2",
         "date-fns": "^3.6.0",
         "dayjs": "^1.11.11",
-        "react-datepicker": "^6.9.0"
+        "react-datepicker": "^6.9.0",
+        "sonner": "^2.0.7"
     }
 }

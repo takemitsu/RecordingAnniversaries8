@@ -103,10 +103,10 @@
 - ✅ 基本的な実装パターンが確立されている
 
 **注意が必要な部分**:
-- ⚠️ HTTPS環境の準備（開発環境でも必要）
 - ⚠️ 複数デバイス管理のUX設計
 - ⚠️ エラーハンドリングの網羅性
 - ⚠️ 既存認証フローとの統合
+- ⚠️ 本番環境のHTTPS設定確認
 
 **慎重な設計が必要な部分**:
 - ⚠️⚠️ デバイス紛失時の復旧フロー
@@ -146,7 +146,7 @@
 **以下の条件を満たす場合に推奨**:
 1. ✅ 開発期間として1-2週間を確保できる
 2. ✅ 実デバイス（Mac/iPhone等）でテストできる
-3. ✅ HTTPS環境を準備できる（Sail + mkcert推奨）
+3. ✅ 本番環境がHTTPS対応済み
 4. ✅ ユーザーサポート体制を整えられる
 5. ✅ 段階的ロールアウトが可能
 
@@ -267,12 +267,21 @@ createInertiaApp({
 - **react-hot-toast**: よりシンプル、軽量
 - **react-toastify**: 最も人気、機能豊富
 
+**⚠️ 重要：vendor:publish で生成される webauthn.js について**
+
+`vendor:publish` 実行時に `resources/js/vendor/webauthn/webauthn.js` が生成されますが、**このファイルは使用しません**。
+
+- このファイルは非推奨（deprecated）で、`@laragear/webpass` への移行が推奨されています
+- 本プロジェクトでは `@simplewebauthn/browser` を使用します
+- `.gitignore` に追加済みのため、コミットされません
+- 削除しても問題ありません（再度 `vendor:publish` で生成されますが無視してください）
+
 ### 開発ツール
 
 **必須**:
-- **HTTPS環境**: Laravel Sail + mkcert
-  - WebAuthnはHTTPSでのみ動作（localhostは除く）
-  - Sail + mkcertで自己署名証明書を使用したHTTPS環境を構築
+- **Laravel Sail環境**: Docker Desktop + Laravel Sail
+  - `http://localhost` で開発可能（WebAuthn仕様により許可）
+  - 本番環境のみHTTPS必須
 
 **推奨**:
 - **Chrome DevTools**: WebAuthnエミュレーター（デバッグ用）
@@ -809,7 +818,7 @@ source ~/.bashrc  # または source ~/.zshrc
        'InvalidStateError': 'このデバイスは既に登録されています。',
 
        // セキュリティ関連
-       'SecurityError': 'セキュリティエラーが発生しました。HTTPSで接続していることを確認してください。',
+       'SecurityError': 'セキュリティエラーが発生しました。localhost または HTTPS で接続していることを確認してください。',
        'NetworkError': 'ネットワークエラーが発生しました。インターネット接続を確認してください。',
 
        // その他

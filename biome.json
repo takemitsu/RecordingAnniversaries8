@@ -7,7 +7,7 @@
     },
     "files": {
         "ignoreUnknown": false,
-        "includes": ["**", "!**/vendor/", "!**/node_modules/", "!**/public/build/", "!**/storage/", "!**/bootstrap/cache/", "!**/resources/js/ssr.tsx"]
+        "includes": ["**", "!.claude", "!.junie", "!**/vendor/", "!**/node_modules/", "!**/public/build/", "!**/storage/", "!**/bootstrap/cache/", "!**/resources/js/ssr.tsx"]
     },
     "formatter": {
         "enabled": true,

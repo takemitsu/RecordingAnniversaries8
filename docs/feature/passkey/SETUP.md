@@ -9,10 +9,9 @@
 
 ### 必須環境
 - ✅ Docker Desktop が起動している
-- ⚠️ mkcert がインストールされている（`brew install mkcert`）
-- ⚠️ SSL証明書が生成されている（`.docker/ssl/`ディレクトリ）
-- ⚠️ docker-compose.ymlにSSL設定が追加されている
-- ⚠️ .envの`APP_URL`が`https://localhost`になっている
+- ✅ .envの`APP_URL`が`http://localhost`になっている（デフォルト設定）
+
+> **💡 重要**: WebAuthn/Passkeyは `http://localhost` で動作します。開発環境でHTTPS設定は不要です。
 
 ### パッケージ状況
 - ❌ `laragear/webauthn` 未インストール
@@ -31,61 +30,25 @@ cp database/database.sqlite database/database.sqlite.backup.$(date +%Y%m%d)
 
 ## 🚀 段階的実装ガイド
 
-### Phase 1: 環境構築（所要時間: 30分〜1時間）
+### Phase 1: 環境構築（所要時間: 5〜10分）
 
-**目標:** HTTPS環境でアプリケーションが動作する状態にする
+**目標:** Sail環境を起動し、アプリケーションが動作する状態にする
 
-#### 1-1. SSL証明書の生成
+#### 1-1. Docker Desktop の起動確認
 
-```bash
-# mkcertのインストール（未インストールの場合）
-brew install mkcert
-mkcert -install
+Docker Desktop が起動していることを確認してください。
 
-# SSL証明書の生成
-mkdir -p .docker/ssl
-cd .docker/ssl
-mkcert -cert-file cert.pem -key-file key.pem localhost 127.0.0.1 ::1
-cd ../..
-```
-
-#### 1-2. docker-compose.ymlの更新
-
-`docker-compose.yml`の`laravel.test`サービスに以下を追加：
-
-```yaml
-services:
-    laravel.test:
-        volumes:
-            - '.:/var/www/html'
-            - './.docker/ssl:/etc/ssl/private'  # 追加
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            SSL_CERT: '/etc/ssl/private/cert.pem'  # 追加
-            SSL_KEY: '/etc/ssl/private/key.pem'    # 追加
-        ports:
-            - '${APP_PORT:-80}:80'
-            - '${APP_SSL_PORT:-443}:443'  # 追加
-```
-
-#### 1-3. .envの更新
+#### 1-2. Sail環境の起動
 
 ```bash
-# .envファイルを編集
-APP_URL=https://localhost
-```
-
-#### 1-4. Sail環境の再起動
-
-```bash
-./vendor/bin/sail down
 ./vendor/bin/sail up -d
 ```
 
-#### 1-5. HTTPS接続確認
+#### 1-3. HTTP接続確認
 
-ブラウザで `https://localhost` にアクセスして、SSL証明書エラーが出ないことを確認。
+ブラウザで `http://localhost` にアクセスして、アプリケーションが表示されることを確認。
+
+> **💡 WebAuthnとHTTPS**: WebAuthn仕様により、`http://localhost` は安全なoriginとして扱われます。開発環境でHTTPS設定は不要です。本番環境のみHTTPSが必須です。
 
 ---
 
@@ -120,7 +83,7 @@ APP_URL=https://localhost
 ```bash
 # テーブルが作成されたか確認
 ./vendor/bin/sail artisan tinker
->>> DB::table('web_authn_credentials')->count();
+>>> DB::table('webauthn_credentials')->count();
 => 0  # 0件であることを確認
 >>> exit
 ```
@@ -143,7 +106,7 @@ APP_URL=https://localhost
 1. Profile画面にPasskey登録ボタンが表示される
 2. ボタンをクリックして指紋認証/Face IDが起動する
 3. 認証後にデバイスが登録される
-4. DB確認: `DB::table('web_authn_credentials')->get()`
+4. DB確認: `DB::table('webauthn_credentials')->get()`
 
 ---
 
@@ -210,32 +173,17 @@ APP_URL=https://localhost
 ### 1. "WebAuthn is not supported" エラー
 
 **原因:**
-- HTTPでアクセスしている
 - ブラウザが古い/非対応
+- `localhost` 以外のホスト名でアクセスしている
 
 **解決方法:**
 ```bash
-# HTTPSでアクセスしているか確認
-# ブラウザのURLバーを確認: https://localhost
-
 # ブラウザの対応確認（Chrome/Edge/Safari/Firefox最新版を使用）
+# http://localhost でアクセスしているか確認
+# 192.168.x.x などのIPアドレスでアクセスしている場合は localhost に変更
 ```
 
-### 2. SSL証明書エラー
-
-**原因:**
-- mkcert -install が実行されていない
-- ブラウザキャッシュ
-
-**解決方法:**
-```bash
-# mkcertの再インストール
-mkcert -install
-
-# ブラウザを完全に再起動
-```
-
-### 3. "Operation not permitted" エラー
+### 2. "Operation not permitted" エラー
 
 **原因:**
 - Sailコンテナ外でコマンドを実行している
@@ -250,21 +198,22 @@ alias sail='./vendor/bin/sail'
 sail artisan migrate
 ```
 
-### 4. Google OAuth認証が動かない
+### 3. Google OAuth認証が動かない
 
 **原因:**
-- GOOGLE_REDIRECT_URI がHTTPのまま
+- GOOGLE_REDIRECT_URI の設定ミス
 
 **解決方法:**
 ```bash
-# .env を更新
-GOOGLE_REDIRECT_URI=https://localhost/auth/google/callback
+# .env を確認
+GOOGLE_REDIRECT_URI=http://localhost/auth/google/callback
 
-# Google Cloud Consoleで「認証済みのリダイレクトURI」を更新
+# Google Cloud Consoleで「認証済みのリダイレクトURI」を確認
 # https://console.cloud.google.com/apis/credentials
+# http://localhost/auth/google/callback が登録されているか確認
 ```
 
-### 5. マイグレーションエラー
+### 4. マイグレーションエラー
 
 **原因:**
 - SQLiteとMySQLの混在
@@ -341,8 +290,8 @@ WebAuthn APIの動作確認：
 
 ### Phase完了チェックリスト
 
-- [ ] Phase 1: HTTPS接続確認完了
-- [ ] Phase 2: パッケージインストール・マイグレーション完了
+- [x] Phase 1: Sail環境起動・HTTP接続確認完了
+- [x] Phase 2: パッケージインストール・マイグレーション完了
 - [ ] Phase 3: Passkey登録機能動作確認
 - [ ] Phase 4: Passkey認証機能動作確認
 - [ ] Phase 5: デバイス管理機能動作確認
@@ -350,4 +299,4 @@ WebAuthn APIの動作確認：
 
 ---
 
-最終更新: 2025-10-28
+最終更新: 2025-10-29
