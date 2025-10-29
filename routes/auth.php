@@ -71,6 +71,12 @@ Route::middleware('auth')->group(function () {
         ->name('webauthn.register.options');
     Route::post('webauthn/register', [WebAuthnController::class, 'register'])
         ->name('webauthn.register');
+
+    // WebAuthn (Passkey) Management Routes
+    Route::get('webauthn/credentials', [WebAuthnController::class, 'index'])
+        ->name('webauthn.credentials.index');
+    Route::delete('webauthn/credentials/{id}', [WebAuthnController::class, 'destroy'])
+        ->name('webauthn.credentials.destroy');
 });
 
 Route::get('/auth/redirect/google', [SocialiteController::class, 'redirectGoogle'])->name('auth.redirect.google');
