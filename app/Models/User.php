@@ -9,6 +9,14 @@ use Illuminate\Notifications\Notifiable;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\WebAuthnAuthentication;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ */
 class User extends Authenticatable implements MustVerifyEmail, WebAuthnAuthenticatable
 {
     use HasFactory, Notifiable, WebAuthnAuthentication;
@@ -46,5 +54,10 @@ class User extends Authenticatable implements MustVerifyEmail, WebAuthnAuthentic
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function entities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Entity::class);
     }
 }
